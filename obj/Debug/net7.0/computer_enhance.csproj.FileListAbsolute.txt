@@ -1,0 +1,15 @@
+/home/ethan/repos/computer_enhance/bin/Debug/net7.0/computer_enhance
+/home/ethan/repos/computer_enhance/bin/Debug/net7.0/computer_enhance.deps.json
+/home/ethan/repos/computer_enhance/bin/Debug/net7.0/computer_enhance.runtimeconfig.json
+/home/ethan/repos/computer_enhance/bin/Debug/net7.0/computer_enhance.dll
+/home/ethan/repos/computer_enhance/bin/Debug/net7.0/computer_enhance.pdb
+/home/ethan/repos/computer_enhance/obj/Debug/net7.0/computer_enhance.csproj.AssemblyReference.cache
+/home/ethan/repos/computer_enhance/obj/Debug/net7.0/computer_enhance.GeneratedMSBuildEditorConfig.editorconfig
+/home/ethan/repos/computer_enhance/obj/Debug/net7.0/computer_enhance.AssemblyInfoInputs.cache
+/home/ethan/repos/computer_enhance/obj/Debug/net7.0/computer_enhance.AssemblyInfo.cs
+/home/ethan/repos/computer_enhance/obj/Debug/net7.0/computer_enhance.csproj.CoreCompileInputs.cache
+/home/ethan/repos/computer_enhance/obj/Debug/net7.0/computer_enhance.dll
+/home/ethan/repos/computer_enhance/obj/Debug/net7.0/refint/computer_enhance.dll
+/home/ethan/repos/computer_enhance/obj/Debug/net7.0/computer_enhance.pdb
+/home/ethan/repos/computer_enhance/obj/Debug/net7.0/computer_enhance.genruntimeconfig.cache
+/home/ethan/repos/computer_enhance/obj/Debug/net7.0/ref/computer_enhance.dll
