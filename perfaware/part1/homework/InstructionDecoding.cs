@@ -2,10 +2,10 @@
 var path = "/home/ethan/repos/computer_enhance/perfaware/part1/homework/test";
 // var path = "/home/ethan/repos/computer_enhance/perfaware/part1/listing_0039_more_movs";
 var file_name = Path.GetFileNameWithoutExtension(path);
-var fileStream = File.Open(path, FileMode.Open);
-var reader = new BinaryReader(fileStream);
-var writer = new StreamWriter($"{file_name}_decoded.asm");
-var buffer = new byte[4];
+using var fileStream = File.Open(path, FileMode.Open);
+using var reader = new BinaryReader(fileStream);
+using var writer = new StreamWriter($"{file_name}_decoded.asm");
+var buffer = new byte[2];
 while (reader.Read(buffer) != 0)
 {
     //mov cl, 12
@@ -17,8 +17,8 @@ while (reader.Read(buffer) != 0)
             HandleMov(writer, buffer);
             break;
         case Instruction.Immediate_to_register:
-            HandleImmediateToRegister(writer, buffer);
-			break;
+            HandleImmediateToRegister(reader, writer, buffer);
+            break;
     }
 }
 
@@ -87,11 +87,16 @@ static void HandleMov(StreamWriter writer, byte[] buffer)
     writer.WriteLine();
 }
 
-static void HandleImmediateToRegister(StreamWriter writer, byte[] buffer)
+static void HandleImmediateToRegister(BinaryReader reader, StreamWriter writer, byte[] buffer)
 {
     var w_flag = (byte)(buffer[0] >> 3 & 1);
     var reg = (byte)(buffer[0] & 0b_111);
-	var data = w_flag == 0 ? buffer[1] : buffer[1] + buffer[2];
+    var data = buffer[1];
+    if (w_flag == 1)
+    {
+        var thirdByte = (byte)reader.ReadByte();
+        data += thirdByte;
+    }
 
     writer.Write("mov");
     writer.Write(' ');
