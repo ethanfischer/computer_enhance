@@ -1,188 +1,118 @@
-﻿internal class Program
+﻿using System.IO;
+var path = "/home/ethan/repos/computer_enhance/perfaware/part1/homework/test";
+// var path = "/home/ethan/repos/computer_enhance/perfaware/part1/listing_0039_more_movs";
+var file_name = Path.GetFileNameWithoutExtension(path);
+var fileStream = File.Open(path, FileMode.Open);
+var reader = new BinaryReader(fileStream);
+var writer = new StreamWriter($"{file_name}_decoded.asm");
+var buffer = new byte[4];
+while (reader.Read(buffer) != 0)
 {
-    private static void Main(string[] args)
+    //mov cl, 12
+    var instruction = DecodeInstruction(buffer[0]);
+
+    switch (instruction)
     {
-        var bytes = File.ReadAllBytes("/home/ethan/repos/computer_enhance/perfaware/part1/listing_0038_many_register_mov");
-        for (var i = 0; i < bytes.Length - 1; i += 2)
-        {
-            DecodeBytes(bytes[i], bytes[i + 1]);
-        }
-
-    }
-
-    static void DecodeBytes(byte firstByte, byte secondByte)
-    {
-        var binary = Convert.ToString(firstByte, toBase: 2);
-        var opCode = GetOpCode(binary);
-        var isDBit = IsDBit(firstByte);
-
-        var firstRegister = GetFirstRegister(firstByte, secondByte);
-        var secondRegister = GetSecondRegister(firstByte, secondByte);
-
-        if (isDBit)
-        {
-            Console.WriteLine($"{opCode} {firstRegister}, {secondRegister}");
-        }
-        else
-        {
-            Console.WriteLine($"{opCode} {secondRegister}, {firstRegister}");
-        }
-    }
-
-    static string GetOpCode(string firstByte)
-    {
-        if (firstByte.StartsWith("100010"))
-        {
-            return "mov";
-        }
-        else
-        {
-            return "unknown";
-        }
-    }
-
-    static string GetFirstRegister(byte firstByte, byte secondByte)
-    {
-        var firstRegisterCode = GetFirstRegisterCode(secondByte);
-
-        if (IsW(firstByte))
-        {
-            switch (firstRegisterCode)
-            {
-                case 0b_00_000_000:
-                    return "ax";
-                case 0b_00_001_000:
-                    return "cx";
-                case 0b_00_010_000:
-                    return "dx";
-                case 0b_00_011_000:
-                    return "bx";
-                case 0b_00_100_000:
-                    return "sp";
-                case 0b_00_101_000:
-                    return "bp";
-                case 0b_00_110_000:
-                    return "si";
-                case 0b_00_111_000:
-                    return "di";
-                default:
-                    return "";
-            }
-        }
-        else
-        {
-            switch (firstRegisterCode)
-            {
-                case 0b_00_000_000:
-                    return "al";
-                case 0b_00_001_000:
-                    return "cl";
-                case 0b_00_010_000:
-                    return "dl";
-                case 0b_00_011_000:
-                    return "bl";
-                case 0b_00_100_000:
-                    return "ah";
-                case 0b_00_101_000:
-                    return "ch";
-                case 0b_00_110_000:
-                    return "dh";
-                case 0b_00_111_000:
-                    return "bh";
-                default:
-                    return "";
-            }
-        }
-    }
-
-
-    static string GetSecondRegister(byte firstByte, byte secondByte)
-    {
-        var secondRegisterCode = GetSecondRegisterCode(secondByte);
-
-        if (IsW(firstByte))
-        {
-            switch (secondRegisterCode)
-            {
-                case 0b_00_000_000:
-                    return "ax";
-                case 0b_00_000_001:
-                    return "cx";
-                case 0b_00_000_010:
-                    return "dx";
-                case 0b_00_000_011:
-                    return "bx";
-                case 0b_00_000_100:
-                    return "sp";
-                case 0b_00_000_101:
-                    return "bp";
-                case 0b_00_000_110:
-                    return "si";
-                case 0b_00_000_111:
-                    return "di";
-                default:
-                    return "ERROR";
-            }
-        }
-        else
-        {
-            switch (secondRegisterCode)
-            {
-                case 0b_00_000_000:
-                    return "al";
-                case 0b_00_000_001:
-                    return "cl";
-                case 0b_00_000_010:
-                    return "dl";
-                case 0b_00_000_011:
-                    return "bl";
-                case 0b_00_000_100:
-                    return "ah";
-                case 0b_00_000_101:
-                    return "ch";
-                case 0b_00_000_110:
-                    return "dh";
-                case 0b_00_000_111:
-                    return "bh";
-                default:
-                    return "ERROR";
-            }
-        }
-    }
-
-    private static bool IsDBit(byte firstByte)
-    {
-        var mask = (byte)0b_0000_0010;
-        return (firstByte & mask) == 0b_0000_0010;
-    }
-
-    private static bool IsW(byte firstByte)
-    {
-        var mask = (byte)0b_0000_0001;
-        var w = (byte)(firstByte & mask);
-        var isW = w == 0b_0000_0001;
-        return isW;
-    }
-
-    private static byte GetFirstRegisterCode(byte secondByte)
-    {
-        var mask = (byte)0b_00_111_000;
-        var maskedRegister = (byte)(secondByte & mask);
-        return maskedRegister;
-    }
-
-    private static byte GetSecondRegisterCode(byte secondByte)
-    {
-        var mask = (byte)0b_00_000_111;
-        var maskedRegister = (byte)(secondByte & mask);
-        return maskedRegister;
+        case Instruction.Mov:
+            HandleMov(writer, buffer);
+            break;
+        case Instruction.Immediate_to_register:
+            HandleImmediateToRegister(writer, buffer);
+			break;
     }
 }
 
+static Instruction DecodeInstruction(byte opcode)
+{
+    if ((opcode >> 2) == 0b_100010)
+    {
+        return Instruction.Mov;
+    }
+    else if ((opcode >> 4) == 0b_1011)
+    {
+        return Instruction.Immediate_to_register;
+    }
+    else
+    {
+        return Instruction.Unknown;
+    }
+    // return opcode switch
+    // {
+    //     //Add new opcode here
+    //     0b_100010 => Instruction.Mov,
+    //     0b_1011 => Instruction.Immediate_to_register,
+    //     _ => throw new Exception($"{Convert.ToString(opcode, 2).PadLeft(6, '0')} opcode not found"),
+    // };
+}
+
+static string DecodeRegisterField(byte register, byte w_flag) =>
+    ((register << 1) | w_flag) switch
+    {
+        0b_000_0 => "al",
+        0b_001_0 => "cl",
+        0b_010_0 => "dl",
+        0b_011_0 => "bl",
+        0b_100_0 => "ah",
+        0b_101_0 => "ch",
+        0b_110_0 => "dh",
+        0b_111_0 => "bh",
+        0b_000_1 => "ax",
+        0b_001_1 => "cx",
+        0b_010_1 => "dx",
+        0b_011_1 => "bx",
+        0b_100_1 => "sp",
+        0b_101_1 => "bp",
+        0b_110_1 => "si",
+        0b_111_1 => "di",
+        _ => throw new Exception($"{Convert.ToString(register, 2).PadLeft(3, '0')} register not found"),
+    };
+
+return 0;
+
+static void HandleMov(StreamWriter writer, byte[] buffer)
+{
+    var d_flag = (byte)((buffer[0] >> 1) & 1);
+    var w_flag = (byte)(buffer[0] & 1);
+    var mod = (byte)((buffer[1] >> 6) & 0b_11);
+    var reg = (byte)((buffer[1] >> 3) & 0b_111);
+    var rm = (byte)(buffer[1] & 0b_111);
+
+    var (destination, source) = d_flag == 1 ? (reg, rm) : (rm, reg);
+
+    writer.Write(DecodeInstruction(buffer[0]));
+    writer.Write(' ');
+    writer.Write(DecodeRegisterField(destination, w_flag));
+    writer.Write(", ");
+    writer.Write(DecodeRegisterField(source, w_flag));
+    writer.WriteLine();
+}
+
+static void HandleImmediateToRegister(StreamWriter writer, byte[] buffer)
+{
+    var w_flag = (byte)(buffer[0] >> 3 & 1);
+    var reg = (byte)(buffer[0] & 0b_111);
+	var data = w_flag == 0 ? buffer[1] : buffer[1] + buffer[2];
+
+    writer.Write("mov");
+    writer.Write(' ');
+    writer.Write(DecodeRegisterField(reg, w_flag));
+    writer.Write(", ");
+    writer.Write(data);
+    writer.WriteLine();
+}
+
+
 public static class Extensions
 {
-    public static string Binary(this byte inputByte)
+    public static string Binary(this byte input, int bitCount = 8)
     {
-        return $"{Convert.ToString(inputByte, toBase: 2).PadLeft(8, '0')}";
+        return Convert.ToString(input, toBase: 2).PadLeft(bitCount, '0');
     }
+}
+
+public enum Instruction
+{
+    Mov,
+    Immediate_to_register,
+    Unknown
 }
