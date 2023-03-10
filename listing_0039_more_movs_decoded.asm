@@ -1,0 +1,15 @@
+Mov si, bx
+Mov dh, al
+mov cl, 12
+mov ch, 244
+mov cx, 12
+mov cx, 243
+mov dx, 123
+mov dx, 132
+Mov al, al
+Mov bx, bx
+Mov dx, si
+Mov al, al
+Mov cx, cx
+Mov dl, cl
+Mov dh, ch

@@ -8,19 +8,19 @@
     "net7.0": []
   },
   "packageFolders": {
-    "/home/ethan/.nuget/packages/": {}
+    "/home/codespace/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/ethan/repos/computer_enhance/computer_enhance.csproj",
+      "projectUniqueName": "/workspaces/computer_enhance/computer_enhance.csproj",
       "projectName": "computer_enhance",
-      "projectPath": "/home/ethan/repos/computer_enhance/computer_enhance.csproj",
-      "packagesPath": "/home/ethan/.nuget/packages/",
-      "outputPath": "/home/ethan/repos/computer_enhance/obj/",
+      "projectPath": "/workspaces/computer_enhance/computer_enhance.csproj",
+      "packagesPath": "/home/codespace/.nuget/packages/",
+      "outputPath": "/workspaces/computer_enhance/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/ethan/.nuget/NuGet/NuGet.Config"
+        "/home/codespace/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
@@ -59,7 +59,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/7.0.201/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/dotnet/7.0.201/sdk/7.0.201/RuntimeIdentifierGraph.json"
       }
     }
   }

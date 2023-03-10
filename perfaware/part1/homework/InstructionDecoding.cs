@@ -1,11 +1,14 @@
 ﻿using System.IO;
-var path = "/home/ethan/repos/computer_enhance/perfaware/part1/homework/test";
-// var path = "/home/ethan/repos/computer_enhance/perfaware/part1/listing_0039_more_movs";
+var path = "perfaware/part1/listing_0039_more_movs";
+
+// var path = "perfaware/part1/listing_0039_more_movs";
 var file_name = Path.GetFileNameWithoutExtension(path);
+
 using var fileStream = File.Open(path, FileMode.Open);
 using var reader = new BinaryReader(fileStream);
 using var writer = new StreamWriter($"{file_name}_decoded.asm");
 var buffer = new byte[2];
+
 while (reader.Read(buffer) != 0)
 {
     //mov cl, 12
@@ -98,12 +101,12 @@ static void HandleImmediateToRegister(BinaryReader reader, StreamWriter writer, 
         data += thirdByte;
     }
 
-    writer.Write("mov");
-    writer.Write(' ');
-    writer.Write(DecodeRegisterField(reg, w_flag));
-    writer.Write(", ");
-    writer.Write(data);
-    writer.WriteLine();
+    writer.XWrite("mov");
+    writer.XWrite(" ");
+    writer.XWrite(DecodeRegisterField(reg, w_flag));
+    writer.XWrite(", ");
+    writer.XWrite(data.ToString());
+    writer.XWriteLine("");
 }
 
 
@@ -113,6 +116,17 @@ public static class Extensions
     {
         return Convert.ToString(input, toBase: 2).PadLeft(bitCount, '0');
     }
+public static void XWrite(this StreamWriter writer, string input)
+{
+    writer.Write(input);
+    Console.Write(input);
+}
+
+public static void XWriteLine(this StreamWriter writer, string input)
+{
+    writer.WriteLine(input);
+    Console.WriteLine(input);
+}
 }
 
 public enum Instruction
