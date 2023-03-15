@@ -1,26 +1,24 @@
 ﻿using System.IO;
-var path = "perfaware/part1/listing_0039_more_movs";
+var path = "perfaware/part1/homework/test";
 
 // var path = "perfaware/part1/listing_0039_more_movs";
 var file_name = Path.GetFileNameWithoutExtension(path);
 
-using var fileStream = File.Open(path, FileMode.Open);
-using var reader = new BinaryReader(fileStream);
+var fileBytes = File.ReadAllBytes(path);
 using var writer = new StreamWriter($"{file_name}_decoded.asm");
-var buffer = new byte[2];
 
-while (reader.Read(buffer) != 0)
+for(var i = 0; i < fileBytes.Length; i++)
 {
     //mov cl, 12
-    var instruction = DecodeInstruction(buffer[0]);
+    var instruction = DecodeInstruction(fileBytes[i]);
 
     switch (instruction)
     {
         case Instruction.Mov:
-            HandleMov(writer, buffer);
+            HandleMov(writer, fileBytes);
             break;
         case Instruction.Immediate_to_register:
-            HandleImmediateToRegister(reader, writer, buffer);
+            i += HandleImmediateToRegister(writer, fileBytes, i);
             break;
     }
 }
@@ -72,33 +70,38 @@ static string DecodeRegisterField(byte register, byte w_flag) =>
 
 return 0;
 
-static void HandleMov(StreamWriter writer, byte[] buffer)
+static void HandleMov(StreamWriter writer, byte[] fileBytes)
 {
-    var d_flag = (byte)((buffer[0] >> 1) & 1);
-    var w_flag = (byte)(buffer[0] & 1);
-    var mod = (byte)((buffer[1] >> 6) & 0b_11);
-    var reg = (byte)((buffer[1] >> 3) & 0b_111);
-    var rm = (byte)(buffer[1] & 0b_111);
+    var d_flag = (byte)((fileBytes[0] >> 1) & 1);
+    var w_flag = (byte)(fileBytes[0] & 1);
+    var mod = (byte)((fileBytes[1] >> 6) & 0b_11);
+    var reg = (byte)((fileBytes[1] >> 3) & 0b_111);
+    var rm = (byte)(fileBytes[1] & 0b_111);
 
     var (destination, source) = d_flag == 1 ? (reg, rm) : (rm, reg);
 
-    writer.Write(DecodeInstruction(buffer[0]));
-    writer.Write(' ');
-    writer.Write(DecodeRegisterField(destination, w_flag));
-    writer.Write(", ");
-    writer.Write(DecodeRegisterField(source, w_flag));
-    writer.WriteLine();
+    writer.XWrite(DecodeInstruction(fileBytes[0]).ToString());
+    writer.XWrite(" ");
+    writer.XWrite(DecodeRegisterField(destination, w_flag));
+    writer.XWrite(", ");
+    writer.XWrite(DecodeRegisterField(source, w_flag));
+    writer.XWriteLine("");
 }
 
-static void HandleImmediateToRegister(BinaryReader reader, StreamWriter writer, byte[] buffer)
+static int HandleImmediateToRegister(StreamWriter writer, byte[] fileBytes, int i)
 {
-    var w_flag = (byte)(buffer[0] >> 3 & 1);
-    var reg = (byte)(buffer[0] & 0b_111);
-    var data = buffer[1];
+    var additionalBytesRead = 1; //we always read at least the second byte
+    var w_flag = (byte)(fileBytes[i] >> 3 & 1);
+    var reg = (byte)(fileBytes[i] & 0b_111);
+    var secondByte = fileBytes[i+1];
+    var data = BitConverter.ToInt16(new byte[2] {secondByte,0});
     if (w_flag == 1)
     {
-        var thirdByte = (byte)reader.ReadByte();
-        data += thirdByte;
+        var thirdByte = (byte)fileBytes[i+2];
+        var secondAndThirdByte = new byte[2] { secondByte, thirdByte };
+        data = BitConverter.ToInt16(secondAndThirdByte,0);
+
+        additionalBytesRead = 2; //we read the third byte
     }
 
     writer.XWrite("mov");
@@ -107,6 +110,8 @@ static void HandleImmediateToRegister(BinaryReader reader, StreamWriter writer, 
     writer.XWrite(", ");
     writer.XWrite(data.ToString());
     writer.XWriteLine("");
+
+    return additionalBytesRead;
 }
 
 
