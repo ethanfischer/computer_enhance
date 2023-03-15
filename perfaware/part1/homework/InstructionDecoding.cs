@@ -92,6 +92,7 @@ static int HandleImmediateToRegister(StreamWriter writer, byte[] fileBytes, int 
 {
     var additionalBytesRead = 1; //we always read at least the second byte
     var w_flag = (byte)(fileBytes[i] >> 3 & 1);
+    var mod = (byte)((fileBytes[i+1] >> 6) & 0b_11);
     var reg = (byte)(fileBytes[i] & 0b_111);
     var secondByte = fileBytes[i+1];
     var data = BitConverter.ToInt16(new byte[2] {secondByte,0});
