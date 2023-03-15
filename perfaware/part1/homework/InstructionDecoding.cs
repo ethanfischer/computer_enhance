@@ -3,13 +3,11 @@ var path = "perfaware/part1/homework/test";
 
 // var path = "perfaware/part1/listing_0039_more_movs";
 var file_name = Path.GetFileNameWithoutExtension(path);
-
 var fileBytes = File.ReadAllBytes(path);
 using var writer = new StreamWriter($"{file_name}_decoded.asm");
 
 for(var i = 0; i < fileBytes.Length; i++)
 {
-    //mov cl, 12
     var instruction = DecodeInstruction(fileBytes[i]);
 
     switch (instruction)
@@ -68,6 +66,36 @@ static string DecodeRegisterField(byte register, byte w_flag) =>
         _ => throw new Exception($"{Convert.ToString(register, 2).PadLeft(3, '0')} register not found"),
     };
 
+static string DecodeEffectiveAddressCalculation(byte rm_mod, byte[] fileBytes, int i) =>
+(rm_mod) switch
+{
+    0b_000_00 => "bx + si",
+    0b_001_00 => "bx + di",
+    0b_010_00 => "bp + si",
+    0b_011_00 => "bp + di",
+    0b_100_00 => "si",
+    0b_101_00 => "di",
+    0b_110_00 => "bp",
+    0b_111_00 => "bx",
+    0b_000_01 => $"bx + si + {fileBytes[i+2]}",
+    0b_001_01 => $"bx + di + {fileBytes[i+2]}",
+    0b_010_01 => $"bp + si + {fileBytes[i+2]}",
+    0b_011_01 => $"bp + di + {fileBytes[i+2]}",
+    0b_100_01 => $"si + {fileBytes[i+2]}",
+    0b_101_01 => $"di + {fileBytes[i+2]}",
+    0b_110_01 => $"bp + {fileBytes[i+2]}",
+    0b_111_01 => $"bx + {fileBytes[i+2]}",
+    0b_000_10 => "bx + si + 16-bit displacement",
+    0b_001_10 => "bx + di + 16-bit displacement",
+    0b_010_10 => "bp + si + 16-bit displacement",
+    0b_011_10 => "bp + di + 16-bit displacement",
+    0b_100_10 => "si + 16-bit displacement",
+    0b_101_10 => "di + 16-bit displacement",
+    0b_110_10 => "bp + 16-bit displacement",
+    0b_111_10 => "bx + 16-bit displacement",
+    _ => throw new Exception($"{Convert.ToString(rm_mod, 2).PadLeft(3, '0')} register not found"),
+};
+
 return 0;
 
 static void HandleMov(StreamWriter writer, byte[] fileBytes, int i)
@@ -84,7 +112,17 @@ static void HandleMov(StreamWriter writer, byte[] fileBytes, int i)
     writer.XWrite(" ");
     writer.XWrite(DecodeRegisterField(destination, w_flag));
     writer.XWrite(", ");
-    writer.XWrite(DecodeRegisterField(source, w_flag));
+    if(mod == 0b_11)
+    {
+        writer.XWrite(DecodeRegisterField(source, w_flag));
+    }
+    else 
+    {
+        writer.XWrite("[");
+        var rm_mod = (byte)(rm << 2 | mod);
+        writer.XWrite(DecodeEffectiveAddressCalculation(rm_mod, fileBytes, i));
+        writer.XWrite("]");
+    }
     writer.XWriteLine("");
 }
 
