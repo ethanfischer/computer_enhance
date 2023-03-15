@@ -15,7 +15,7 @@ for(var i = 0; i < fileBytes.Length; i++)
     switch (instruction)
     {
         case Instruction.Mov:
-            HandleMov(writer, fileBytes);
+            HandleMov(writer, fileBytes, i);
             break;
         case Instruction.Immediate_to_register:
             i += HandleImmediateToRegister(writer, fileBytes, i);
@@ -70,17 +70,17 @@ static string DecodeRegisterField(byte register, byte w_flag) =>
 
 return 0;
 
-static void HandleMov(StreamWriter writer, byte[] fileBytes)
+static void HandleMov(StreamWriter writer, byte[] fileBytes, int i)
 {
-    var d_flag = (byte)((fileBytes[0] >> 1) & 1);
-    var w_flag = (byte)(fileBytes[0] & 1);
-    var mod = (byte)((fileBytes[1] >> 6) & 0b_11);
-    var reg = (byte)((fileBytes[1] >> 3) & 0b_111);
-    var rm = (byte)(fileBytes[1] & 0b_111);
+    var d_flag = (byte)((fileBytes[i] >> 1) & 1);
+    var w_flag = (byte)(fileBytes[i] & 1);
+    var mod = (byte)((fileBytes[i+1] >> 6) & 0b_11);
+    var reg = (byte)((fileBytes[i+1] >> 3) & 0b_111);
+    var rm = (byte)(fileBytes[i+1] & 0b_111);
 
     var (destination, source) = d_flag == 1 ? (reg, rm) : (rm, reg);
 
-    writer.XWrite(DecodeInstruction(fileBytes[0]).ToString());
+    writer.XWrite(DecodeInstruction(fileBytes[i]).ToString());
     writer.XWrite(" ");
     writer.XWrite(DecodeRegisterField(destination, w_flag));
     writer.XWrite(", ");
