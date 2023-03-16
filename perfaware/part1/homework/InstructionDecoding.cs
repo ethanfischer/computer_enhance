@@ -109,24 +109,43 @@ static int HandleMov(StreamWriter writer, byte[] fileBytes, int i)
 
     var (destination, source) = d_flag == 1 ? (reg, rm) : (rm, reg);
 
-    writer.XWrite(DecodeInstruction(fileBytes[i]).ToString());
-    writer.XWrite(" ");
-    writer.XWrite(DecodeRegisterField(destination, w_flag));
-    writer.XWrite(", ");
     if(mod == 0b_11)
     {
+        writer.XWrite(DecodeInstruction(fileBytes[i]).ToString());
+        writer.XWrite(" ");
+        writer.XWrite(DecodeRegisterField(destination, w_flag));
+        writer.XWrite(", ");
         writer.XWrite(DecodeRegisterField(source, w_flag));
+        writer.XWriteLine("");
     }
-    else 
+    else if(mod == 0b_00)
     {
+        writer.XWrite(DecodeInstruction(fileBytes[i]).ToString());
+        writer.XWrite(" ");
         writer.XWrite("[");
         var rm_mod = (byte)(rm << 2 | mod);
         var (addressCalculation, a) = DecodeEffectiveAddressCalculation(rm_mod, fileBytes, i);
         additionalBytesRead = a;
         writer.XWrite(addressCalculation);
         writer.XWrite("]");
+        writer.XWrite(", ");
+        writer.XWrite(DecodeRegisterField(source, w_flag));
+        writer.XWriteLine("");
     }
-    writer.XWriteLine("");
+    else 
+    {
+        writer.XWrite(DecodeInstruction(fileBytes[i]).ToString());
+        writer.XWrite(" ");
+        writer.XWrite(DecodeRegisterField(destination, w_flag));
+        writer.XWrite(", ");
+        writer.XWrite("[");
+        var rm_mod = (byte)(rm << 2 | mod);
+        var (addressCalculation, a) = DecodeEffectiveAddressCalculation(rm_mod, fileBytes, i);
+        additionalBytesRead = a;
+        writer.XWrite(addressCalculation);
+        writer.XWrite("]");
+        writer.XWriteLine("");
+    }
 
     return additionalBytesRead;
 }
