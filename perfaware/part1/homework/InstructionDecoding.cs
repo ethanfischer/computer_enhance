@@ -66,40 +66,41 @@ static string DecodeRegisterField(byte register, byte w_flag) =>
         _ => throw new Exception($"{Convert.ToString(register, 2).PadLeft(3, '0')} register not found"),
     };
 
-static string DecodeEffectiveAddressCalculation(byte rm_mod, byte[] fileBytes, int i) =>
+static (string, int) DecodeEffectiveAddressCalculation(byte rm_mod, byte[] fileBytes, int i) =>
 (rm_mod) switch
 {
-    0b_000_00 => "bx + si",
-    0b_001_00 => "bx + di",
-    0b_010_00 => "bp + si",
-    0b_011_00 => "bp + di",
-    0b_100_00 => "si",
-    0b_101_00 => "di",
-    0b_110_00 => "bp",
-    0b_111_00 => "bx",
-    0b_000_01 => $"bx + si + {fileBytes[i+2]}",
-    0b_001_01 => $"bx + di + {fileBytes[i+2]}",
-    0b_010_01 => $"bp + si + {fileBytes[i+2]}",
-    0b_011_01 => $"bp + di + {fileBytes[i+2]}",
-    0b_100_01 => $"si + {fileBytes[i+2]}",
-    0b_101_01 => $"di + {fileBytes[i+2]}",
-    0b_110_01 => $"bp + {fileBytes[i+2]}",
-    0b_111_01 => $"bx + {fileBytes[i+2]}",
-    0b_000_10 => "bx + si + 16-bit displacement",
-    0b_001_10 => "bx + di + 16-bit displacement",
-    0b_010_10 => "bp + si + 16-bit displacement",
-    0b_011_10 => "bp + di + 16-bit displacement",
-    0b_100_10 => "si + 16-bit displacement",
-    0b_101_10 => "di + 16-bit displacement",
-    0b_110_10 => "bp + 16-bit displacement",
-    0b_111_10 => "bx + 16-bit displacement",
+    0b_000_00 => ("bx + si", 0),
+    0b_001_00 => ("bx + di", 0),
+    0b_010_00 => ("bp + si", 0),
+    0b_011_00 => ("bp + di", 0),
+    0b_100_00 => ("si", 0),
+    0b_101_00 => ("di", 0),
+    0b_110_00 => ("bp", 0),
+    0b_111_00 => ("bx", 0),
+    0b_000_01 => ($"bx + si + {fileBytes[i+2]}", 1),
+    0b_001_01 => ($"bx + di + {fileBytes[i+2]}", 1),
+    0b_010_01 => ($"bp + si + {fileBytes[i+2]}", 1),
+    0b_011_01 => ($"bp + di + {fileBytes[i+2]}", 1),
+    0b_100_01 => ($"si + {fileBytes[i+2]}", 1),
+    0b_101_01 => ($"di + {fileBytes[i+2]}", 1),
+    0b_110_01 => ($"bp + {fileBytes[i+2]}", 1),
+    0b_111_01 => ($"bx + {fileBytes[i+2]}", 1),
+    0b_000_10 => ($"bx + si + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}", 2),
+    0b_001_10 => ($"bx + di + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}", 2),
+    0b_010_10 => ($"bp + si + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}", 2),
+    0b_011_10 => ($"bp + di + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}", 2),
+    0b_100_10 => ($"si + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}", 2),
+    0b_101_10 => ($"di + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}", 2),
+    0b_110_10 => ($"bp + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}", 2),
+    0b_111_10 => ($"bx + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}", 2),
     _ => throw new Exception($"{Convert.ToString(rm_mod, 2).PadLeft(3, '0')} register not found"),
 };
 
 return 0;
 
-static void HandleMov(StreamWriter writer, byte[] fileBytes, int i)
+static int HandleMov(StreamWriter writer, byte[] fileBytes, int i)
 {
+    var additionalBytesRead = 0;
     var d_flag = (byte)((fileBytes[i] >> 1) & 1);
     var w_flag = (byte)(fileBytes[i] & 1);
     var mod = (byte)((fileBytes[i+1] >> 6) & 0b_11);
@@ -120,10 +121,14 @@ static void HandleMov(StreamWriter writer, byte[] fileBytes, int i)
     {
         writer.XWrite("[");
         var rm_mod = (byte)(rm << 2 | mod);
-        writer.XWrite(DecodeEffectiveAddressCalculation(rm_mod, fileBytes, i));
+        var (addressCalculation, a) = DecodeEffectiveAddressCalculation(rm_mod, fileBytes, i);
+        additionalBytesRead = a;
+        writer.XWrite(addressCalculation);
         writer.XWrite("]");
     }
     writer.XWriteLine("");
+
+    return additionalBytesRead;
 }
 
 static int HandleImmediateToRegister(StreamWriter writer, byte[] fileBytes, int i)
