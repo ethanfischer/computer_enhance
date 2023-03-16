@@ -16,7 +16,7 @@ for(var i = 0; i < fileBytes.Length; i++)
             HandleMov(writer, fileBytes, i);
             break;
         case Instruction.Immediate_to_register:
-            i += HandleImmediateToRegister(writer, fileBytes, i);
+            HandleImmediateToRegister(writer, fileBytes, i);
             break;
     }
 }
@@ -66,41 +66,40 @@ static string DecodeRegisterField(byte register, byte w_flag) =>
         _ => throw new Exception($"{Convert.ToString(register, 2).PadLeft(3, '0')} register not found"),
     };
 
-static (string, int) DecodeEffectiveAddressCalculation(byte rm_mod, byte[] fileBytes, int i) =>
+static string DecodeEffectiveAddressCalculation(byte rm_mod, byte[] fileBytes, int i) =>
 (rm_mod) switch
 {
-    0b_000_00 => ("bx + si", 0),
-    0b_001_00 => ("bx + di", 0),
-    0b_010_00 => ("bp + si", 0),
-    0b_011_00 => ("bp + di", 0),
-    0b_100_00 => ("si", 0),
-    0b_101_00 => ("di", 0),
-    0b_110_00 => ("bp", 0),
-    0b_111_00 => ("bx", 0),
-    0b_000_01 => ($"bx + si + {fileBytes[i+2]}", 1),
-    0b_001_01 => ($"bx + di + {fileBytes[i+2]}", 1),
-    0b_010_01 => ($"bp + si + {fileBytes[i+2]}", 1),
-    0b_011_01 => ($"bp + di + {fileBytes[i+2]}", 1),
-    0b_100_01 => ($"si + {fileBytes[i+2]}", 1),
-    0b_101_01 => ($"di + {fileBytes[i+2]}", 1),
-    0b_110_01 => ($"bp + {fileBytes[i+2]}", 1),
-    0b_111_01 => ($"bx + {fileBytes[i+2]}", 1),
-    0b_000_10 => ($"bx + si + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}", 2),
-    0b_001_10 => ($"bx + di + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}", 2),
-    0b_010_10 => ($"bp + si + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}", 2),
-    0b_011_10 => ($"bp + di + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}", 2),
-    0b_100_10 => ($"si + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}", 2),
-    0b_101_10 => ($"di + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}", 2),
-    0b_110_10 => ($"bp + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}", 2),
-    0b_111_10 => ($"bx + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}", 2),
+    0b_000_00 => "bx + si",
+    0b_001_00 => "bx + di",
+    0b_010_00 => "bp + si",
+    0b_011_00 => "bp + di",
+    0b_100_00 => "si",
+    0b_101_00 => "di",
+    0b_110_00 => "bp",
+    0b_111_00 => "bx",
+    0b_000_01 => $"bx + si + {fileBytes[i+2]}",
+    0b_001_01 => $"bx + di + {fileBytes[i+2]}",
+    0b_010_01 => $"bp + si + {fileBytes[i+2]}",
+    0b_011_01 => $"bp + di + {fileBytes[i+2]}",
+    0b_100_01 => $"si + {fileBytes[i+2]}",
+    0b_101_01 => $"di + {fileBytes[i+2]}",
+    0b_110_01 => $"bp + {fileBytes[i+2]}",
+    0b_111_01 => $"bx + {fileBytes[i+2]}",
+    0b_000_10 => $"bx + si + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}",
+    0b_001_10 => $"bx + di + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}",
+    0b_010_10 => $"bp + si + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}",
+    0b_011_10 => $"bp + di + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}",
+    0b_100_10 => $"si + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}",
+    0b_101_10 => $"di + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}",
+    0b_110_10 => $"bp + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}",
+    0b_111_10 => $"bx + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}",
     _ => throw new Exception($"{Convert.ToString(rm_mod, 2).PadLeft(3, '0')} register not found"),
 };
 
 return 0;
 
-static int HandleMov(StreamWriter writer, byte[] fileBytes, int i)
+static void HandleMov(StreamWriter writer, byte[] fileBytes, int i)
 {
-    var additionalBytesRead = 0;
     var d_flag = (byte)((fileBytes[i] >> 1) & 1);
     var w_flag = (byte)(fileBytes[i] & 1);
     var mod = (byte)((fileBytes[i+1] >> 6) & 0b_11);
@@ -124,9 +123,7 @@ static int HandleMov(StreamWriter writer, byte[] fileBytes, int i)
         writer.XWrite(" ");
         writer.XWrite("[");
         var rm_mod = (byte)(rm << 2 | mod);
-        var (addressCalculation, a) = DecodeEffectiveAddressCalculation(rm_mod, fileBytes, i);
-        additionalBytesRead = a;
-        writer.XWrite(addressCalculation);
+        writer.XWrite(DecodeEffectiveAddressCalculation(rm_mod, fileBytes, i));
         writer.XWrite("]");
         writer.XWrite(", ");
         writer.XWrite(DecodeRegisterField(source, w_flag));
@@ -140,19 +137,14 @@ static int HandleMov(StreamWriter writer, byte[] fileBytes, int i)
         writer.XWrite(", ");
         writer.XWrite("[");
         var rm_mod = (byte)(rm << 2 | mod);
-        var (addressCalculation, a) = DecodeEffectiveAddressCalculation(rm_mod, fileBytes, i);
-        additionalBytesRead = a;
-        writer.XWrite(addressCalculation);
+        writer.XWrite(DecodeEffectiveAddressCalculation(rm_mod, fileBytes, i));
         writer.XWrite("]");
         writer.XWriteLine("");
     }
-
-    return additionalBytesRead;
 }
 
-static int HandleImmediateToRegister(StreamWriter writer, byte[] fileBytes, int i)
+static void HandleImmediateToRegister(StreamWriter writer, byte[] fileBytes, int i)
 {
-    var additionalBytesRead = 1; //we always read at least the second byte
     var w_flag = (byte)(fileBytes[i] >> 3 & 1);
     var mod = (byte)((fileBytes[i+1] >> 6) & 0b_11);
     var reg = (byte)(fileBytes[i] & 0b_111);
@@ -163,8 +155,6 @@ static int HandleImmediateToRegister(StreamWriter writer, byte[] fileBytes, int 
         var thirdByte = (byte)fileBytes[i+2];
         var secondAndThirdByte = new byte[2] { secondByte, thirdByte };
         data = BitConverter.ToInt16(secondAndThirdByte,0);
-
-        additionalBytesRead = 2; //we read the third byte
     }
 
     writer.XWrite("mov");
@@ -173,8 +163,6 @@ static int HandleImmediateToRegister(StreamWriter writer, byte[] fileBytes, int 
     writer.XWrite(", ");
     writer.XWrite(data.ToString());
     writer.XWriteLine("");
-
-    return additionalBytesRead;
 }
 
 
