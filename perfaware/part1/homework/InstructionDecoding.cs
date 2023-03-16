@@ -83,7 +83,7 @@ static string DecodeEffectiveAddressCalculation(byte rm_mod, byte[] fileBytes, i
     0b_011_01 => $"[bp + di + {fileBytes[i+2]}]",
     0b_100_01 => $"[si + {fileBytes[i+2]}]",
     0b_101_01 => $"[di + {fileBytes[i+2]}]",
-    0b_110_01 => $"[bp + {fileBytes[i+2]}]",
+    0b_110_01 => $"[bp{(fileBytes[i+2] == 0 ? "" : "+ {fileBytes[i+2].ToString()}")}]",
     0b_111_01 => $"[bx + {fileBytes[i+2]}]",
     0b_000_10 => $"[bx + si + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}]",
     0b_001_10 => $"[bx + di + {BitConverter.ToInt16(new byte[2] {fileBytes[i+2],fileBytes[i+3]})}]",
@@ -106,10 +106,9 @@ static void HandleMov(StreamWriter writer, byte[] fileBytes, int i)
     var reg = (byte)((fileBytes[i+1] >> 3) & 0b_111);
     var rm = (byte)(fileBytes[i+1] & 0b_111);
 
-    var (destination, source) = d_flag == 1 ? (reg, rm) : (rm, reg);
-
     if(mod == 0b_11)
     {
+        var (destination, source) = d_flag == 1 ? (reg, rm) : (rm, reg);
         writer.XWrite(DecodeInstruction(fileBytes[i]).ToString());
         writer.XWrite(" ");
         writer.XWrite(DecodeRegisterField(destination, w_flag));
@@ -117,24 +116,14 @@ static void HandleMov(StreamWriter writer, byte[] fileBytes, int i)
         writer.XWrite(DecodeRegisterField(source, w_flag));
         writer.XWriteLine("");
     }
-    else if(mod == 0b_00)
+    else
     {
         writer.XWrite(DecodeInstruction(fileBytes[i]).ToString());
         writer.XWrite(" ");
         var rm_mod = (byte)(rm << 2 | mod);
-        writer.XWrite(d_flag == 0 ? DecodeEffectiveAddressCalculation(rm_mod, fileBytes, i) : DecodeRegisterField(source, w_flag));
+        writer.XWrite(d_flag == 0 ? DecodeEffectiveAddressCalculation(rm_mod, fileBytes, i) : DecodeRegisterField(reg, w_flag));
         writer.XWrite(", ");
-        writer.XWrite(d_flag == 0 ? DecodeRegisterField(source, w_flag) : DecodeEffectiveAddressCalculation(rm_mod, fileBytes, i));
-        writer.XWriteLine("");
-    }
-    else 
-    {
-        writer.XWrite(DecodeInstruction(fileBytes[i]).ToString());
-        writer.XWrite(" ");
-        writer.XWrite(DecodeRegisterField(destination, w_flag));
-        writer.XWrite(", ");
-        var rm_mod = (byte)(rm << 2 | mod);
-        writer.XWrite(DecodeEffectiveAddressCalculation(rm_mod, fileBytes, i));
+        writer.XWrite(d_flag == 0 ? DecodeRegisterField(reg, w_flag) : DecodeEffectiveAddressCalculation(rm_mod, fileBytes, i));
         writer.XWriteLine("");
     }
 }
