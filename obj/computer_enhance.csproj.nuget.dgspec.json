@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/workspaces/computer_enhance/computer_enhance.csproj": {}
+    "/home/ethan/repos/computer_enhance/computer_enhance.csproj": {}
   },
   "projects": {
-    "/workspaces/computer_enhance/computer_enhance.csproj": {
+    "/home/ethan/repos/computer_enhance/computer_enhance.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/workspaces/computer_enhance/computer_enhance.csproj",
+        "projectUniqueName": "/home/ethan/repos/computer_enhance/computer_enhance.csproj",
         "projectName": "computer_enhance",
-        "projectPath": "/workspaces/computer_enhance/computer_enhance.csproj",
-        "packagesPath": "/home/codespace/.nuget/packages/",
-        "outputPath": "/workspaces/computer_enhance/obj/",
+        "projectPath": "/home/ethan/repos/computer_enhance/computer_enhance.csproj",
+        "packagesPath": "/home/ethan/.nuget/packages/",
+        "outputPath": "/home/ethan/repos/computer_enhance/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/codespace/.nuget/NuGet/NuGet.Config"
+          "/home/ethan/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
@@ -53,7 +53,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/dotnet/7.0.201/sdk/7.0.201/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/7.0.201/RuntimeIdentifierGraph.json"
         }
       }
     }
