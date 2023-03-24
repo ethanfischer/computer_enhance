@@ -5,7 +5,13 @@ var file_name = Path.GetFileNameWithoutExtension(path);
 var fileBytes = File.ReadAllBytes(path);
 using var writer = new StreamWriter($"{file_name}_decoded.asm");
 
-for (var i = 0; i < fileBytes.Length; i++)
+foreach (var b in fileBytes)
+{
+    writer.XWriteLine(b.Binary());
+}
+
+var i = 0;
+while (i < fileBytes.Length)
 {
     var instruction = DecodeInstruction(fileBytes[i]);
 
@@ -15,20 +21,34 @@ for (var i = 0; i < fileBytes.Length; i++)
         case Instruction.Add:
         case Instruction.Sub:
         case Instruction.Cmp:
-            HandleMovAddSubCmp(writer, fileBytes, i, instruction);
+            HandleMovAddSubCmp(writer, fileBytes, ref i, instruction);
             break;
         case Instruction.ImmediateToRegister:
-            HandleImmediateToRegister(writer, fileBytes, i);
+            HandleImmediateToRegister(writer, fileBytes, ref i, Instruction.Mov);
             break;
         case Instruction.AddSubCmp_ImmediateToRegister:
-            HandleAddSubCmp_ImmediateToRegister(writer, fileBytes, i);
+            HandleAddSubCmp_ImmediateToRegister(writer, fileBytes, ref i);
             break;
     }
 }
 
-void HandleAddSubCmp_ImmediateToRegister(StreamWriter writer, byte[] fileBytes, int i)
+void HandleAddSubCmp_ImmediateToRegister(StreamWriter writer, byte[] fileBytes, ref int i)
 {
-    throw new NotImplementedException();
+    var magicOctal = (byte)((fileBytes[i + 1] >> 3) & 0b_111);
+    switch (magicOctal)
+    {
+        case 0b_000:
+            HandleImmediateToRegister(writer, fileBytes, ref i, Instruction.Add);
+            break;
+        case 0b_101:
+            HandleImmediateToRegister(writer, fileBytes, ref i, Instruction.Sub);
+            break;
+        case 0b_111:
+            HandleImmediateToRegister(writer, fileBytes, ref i, Instruction.Cmp);
+            break;
+        default:
+            break;
+    }
 }
 
 static Instruction DecodeInstruction(byte opcode)
@@ -44,7 +64,7 @@ static Instruction DecodeInstruction(byte opcode)
         0b_001010 => Instruction.Sub,
         0b_001110 => Instruction.Cmp,
         0b_100000 => Instruction.AddSubCmp_ImmediateToRegister,
-        _ => throw new Exception($"{Convert.ToString(opcode, 2).PadLeft(6, '0')} opcode not found"),
+        _ => Instruction.None
     };
 }
 
@@ -70,39 +90,39 @@ static string DecodeRegisterField(byte register, byte w_flag) =>
         _ => throw new Exception($"{Convert.ToString(register, 2).PadLeft(3, '0')} register not found"),
     };
 
-static string DecodeEffectiveAddressCalculation(byte rm_mod, byte[] fileBytes, int i) =>
+static (string decoded, int indexIncrementAmount) DecodeEffectiveAddressCalculation(byte rm_mod, byte[] fileBytes, int i) =>
 (rm_mod) switch
 {
-    0b_000_00 => "[bx + si]",
-    0b_001_00 => "[bx + di]",
-    0b_010_00 => "[bp + si]",
-    0b_011_00 => "[bp + di]",
-    0b_100_00 => "[si]",
-    0b_101_00 => "[di]",
-    0b_110_00 => "[bp]",
-    0b_111_00 => "[bx]",
-    0b_000_01 => $"[bx + si + {fileBytes[i + 2]}]",
-    0b_001_01 => $"[bx + di + {fileBytes[i + 2]}]",
-    0b_010_01 => $"[bp + si + {fileBytes[i + 2]}]",
-    0b_011_01 => $"[bp + di + {fileBytes[i + 2]}]",
-    0b_100_01 => $"[si + {fileBytes[i + 2]}]",
-    0b_101_01 => $"[di + {fileBytes[i + 2]}]",
-    0b_110_01 => $"[bp{(fileBytes[i + 2] == 0 ? "" : "+ {fileBytes[i+2].ToString()}")}]",
-    0b_111_01 => $"[bx + {fileBytes[i + 2]}]",
-    0b_000_10 => $"[bx + si + {BitConverter.ToInt16(new byte[2] { fileBytes[i + 2], fileBytes[i + 3] })}]",
-    0b_001_10 => $"[bx + di + {BitConverter.ToInt16(new byte[2] { fileBytes[i + 2], fileBytes[i + 3] })}]",
-    0b_010_10 => $"[bp + si + {BitConverter.ToInt16(new byte[2] { fileBytes[i + 2], fileBytes[i + 3] })}]",
-    0b_011_10 => $"[bp + di + {BitConverter.ToInt16(new byte[2] { fileBytes[i + 2], fileBytes[i + 3] })}]",
-    0b_100_10 => $"[si + {BitConverter.ToInt16(new byte[2] { fileBytes[i + 2], fileBytes[i + 3] })}]",
-    0b_101_10 => $"[di + {BitConverter.ToInt16(new byte[2] { fileBytes[i + 2], fileBytes[i + 3] })}]",
-    0b_110_10 => $"[bp + {BitConverter.ToInt16(new byte[2] { fileBytes[i + 2], fileBytes[i + 3] })}]",
-    0b_111_10 => $"[bx + {BitConverter.ToInt16(new byte[2] { fileBytes[i + 2], fileBytes[i + 3] })}]",
+    0b_000_00 => ("[bx + si]", 2),
+    0b_001_00 => ("[bx + di]", 2),
+    0b_010_00 => ("[bp + si]", 2),
+    0b_011_00 => ("[bp + di]", 2),
+    0b_100_00 => ("[si]", 2),
+    0b_101_00 => ("[di]", 2),
+    0b_110_00 => ("[bp]", 2),
+    0b_111_00 => ("[bx]", 2),
+    0b_000_01 => ($"[bx + si + {fileBytes[i + 2]}]", 3),
+    0b_001_01 => ($"[bx + di + {fileBytes[i + 2]}]", 3),
+    0b_010_01 => ($"[bp + si + {fileBytes[i + 2]}]", 3),
+    0b_011_01 => ($"[bp + di + {fileBytes[i + 2]}]", 3),
+    0b_100_01 => ($"[si + {fileBytes[i + 2]}]", 3),
+    0b_101_01 => ($"[di + {fileBytes[i + 2]}]", 3),
+    0b_110_01 => ($"[bp{(fileBytes[i + 2] == 0 ? "" : "+ {fileBytes[i+2].ToString()}")}]", 3),
+    0b_111_01 => ($"[bx + {fileBytes[i + 2]}]", 3),
+    0b_000_10 => ($"[bx + si + {BitConverter.ToInt16(new byte[2] { fileBytes[i + 2], fileBytes[i + 3] })}]", 4),
+    0b_001_10 => ($"[bx + di + {BitConverter.ToInt16(new byte[2] { fileBytes[i + 2], fileBytes[i + 3] })}]", 4),
+    0b_010_10 => ($"[bp + si + {BitConverter.ToInt16(new byte[2] { fileBytes[i + 2], fileBytes[i + 3] })}]", 4),
+    0b_011_10 => ($"[bp + di + {BitConverter.ToInt16(new byte[2] { fileBytes[i + 2], fileBytes[i + 3] })}]", 4),
+    0b_100_10 => ($"[si + {BitConverter.ToInt16(new byte[2] { fileBytes[i + 2], fileBytes[i + 3] })}]", 4),
+    0b_101_10 => ($"[di + {BitConverter.ToInt16(new byte[2] { fileBytes[i + 2], fileBytes[i + 3] })}]", 4),
+    0b_110_10 => ($"[bp + {BitConverter.ToInt16(new byte[2] { fileBytes[i + 2], fileBytes[i + 3] })}]", 4),
+    0b_111_10 => ($"[bx + {BitConverter.ToInt16(new byte[2] { fileBytes[i + 2], fileBytes[i + 3] })}]", 4),
     _ => throw new Exception($"{Convert.ToString(rm_mod, 2).PadLeft(3, '0')} register not found"),
 };
 
 return 0;
 
-static void HandleMovAddSubCmp(StreamWriter writer, byte[] fileBytes, int i, Instruction instruction)
+static void HandleMovAddSubCmp(StreamWriter writer, byte[] fileBytes, ref int i, Instruction instruction)
 {
     var d_flag = (byte)((fileBytes[i] >> 1) & 1);
     var w_flag = (byte)(fileBytes[i] & 1);
@@ -119,34 +139,42 @@ static void HandleMovAddSubCmp(StreamWriter writer, byte[] fileBytes, int i, Ins
         writer.XWrite(", ");
         writer.XWrite(DecodeRegisterField(source, w_flag));
         writer.XWriteLine("");
+        i += 2;
     }
     else
     {
         writer.XWrite(instruction.ToString());
         writer.XWrite(" ");
         var rm_mod = (byte)(rm << 2 | mod);
-        writer.XWrite(d_flag == 0 ? DecodeEffectiveAddressCalculation(rm_mod, fileBytes, i) : DecodeRegisterField(reg, w_flag));
+        var effectiveAddressCalculation = DecodeEffectiveAddressCalculation(rm_mod, fileBytes, i);
+        writer.XWrite(d_flag == 0 ? effectiveAddressCalculation.decoded : DecodeRegisterField(reg, w_flag));
         writer.XWrite(", ");
-        writer.XWrite(d_flag == 0 ? DecodeRegisterField(reg, w_flag) : DecodeEffectiveAddressCalculation(rm_mod, fileBytes, i));
+        writer.XWrite(d_flag == 0 ? DecodeRegisterField(reg, w_flag) : effectiveAddressCalculation.decoded);
         writer.XWriteLine("");
+        i += effectiveAddressCalculation.indexIncrementAmount;
     }
 }
 
-static void HandleImmediateToRegister(StreamWriter writer, byte[] fileBytes, int i)
+static void HandleImmediateToRegister(StreamWriter writer, byte[] fileBytes, ref int i, Instruction instruction)
 {
-    var w_flag = (byte)(fileBytes[i] >> 3 & 1);
+    var w_flag = (byte)(fileBytes[i] & 1);
     var mod = (byte)((fileBytes[i + 1] >> 6) & 0b_11);
-    var reg = (byte)(fileBytes[i] & 0b_111);
-    var secondByte = fileBytes[i + 1];
-    var data = BitConverter.ToInt16(new byte[2] { secondByte, 0 });
+    var reg = (byte)(fileBytes[i + 1] & 0b_111);
+    var thirdByte = fileBytes[i + 2];
+    var data = BitConverter.ToInt16(new byte[2] { thirdByte, 0 });
     if (w_flag == 1)
     {
-        var thirdByte = (byte)fileBytes[i + 2];
-        var secondAndThirdByte = new byte[2] { secondByte, thirdByte };
-        data = BitConverter.ToInt16(secondAndThirdByte, 0);
+        var fourthByte = fileBytes.TryGetByteAtIndex(i + 3);
+        var thirdAndFourthByte = new byte[2] { thirdByte, fourthByte };
+        data = BitConverter.ToInt16(thirdAndFourthByte, 0);
+        i += 4;
+    }
+    else
+    {
+        i += 3;
     }
 
-    writer.XWrite("mov");
+    writer.XWrite(instruction.ToString());
     writer.XWrite(" ");
     writer.XWrite(DecodeRegisterField(reg, w_flag));
     writer.XWrite(", ");
@@ -172,6 +200,18 @@ public static class Extensions
         writer.WriteLine(input);
         Console.WriteLine(input);
     }
+
+    public static byte TryGetByteAtIndex(this byte[] source, int i)
+    {
+        if (i < source.Length)
+        {
+            return source[i];
+        }
+        else
+        {
+            return 0;
+        }
+    }
 }
 
 public enum Instruction
@@ -181,5 +221,6 @@ public enum Instruction
     Add,
     Sub,
     Cmp,
-    AddSubCmp_ImmediateToRegister
+    AddSubCmp_ImmediateToRegister,
+    None
 }

@@ -16,9 +16,9 @@
 
 bits 16
 
-;add bx, [bx+si]
+add bx, [bx+si]
 add bx, [bp]
-;add si, 2
+add si, 2
 ;add bp, 2
 ;add cx, 8
 ;add bx, [bp + 0]
@@ -40,7 +40,7 @@ add bx, [bp]
 ;add ax, 1000
 ;add al, -30
 ;add al, 9
-
+;
 ;sub bx, [bx+si]
 ;sub bx, [bp]
 ;sub si, 2
@@ -65,7 +65,7 @@ add bx, [bp]
 ;sub ax, 1000
 ;sub al, -30
 ;sub al, 9
-
+;
 ;cmp bx, [bx+si]
 ;cmp bx, [bp]
 ;cmp si, 2
@@ -90,14 +90,14 @@ add bx, [bp]
 ;cmp ax, 1000
 ;cmp al, -30
 ;cmp al, 9
-
+;
 ;test_label0:
 ;jnz test_label1
 ;jnz test_label0
 ;test_label1:
 ;jnz test_label0
 ;jnz test_label1
-
+;
 ;label:
 ;je label
 ;jl label
