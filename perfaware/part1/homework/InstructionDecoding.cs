@@ -7,7 +7,7 @@ using var writer = new StreamWriter($"{file_name}_decoded.asm");
 
 foreach (var b in fileBytes)
 {
-    writer.XWriteLine(b.Binary());
+    // writer.XWriteLine(b.Binary());
 }
 
 var i = 0;
@@ -28,6 +28,9 @@ while (i < fileBytes.Length)
             break;
         case Instruction.AddSubCmp_ImmediateToRegister:
             HandleAddSubCmp_ImmediateToRegister(writer, fileBytes, ref i);
+            break;
+        case Instruction.None:
+            i++;
             break;
     }
 }
@@ -162,7 +165,7 @@ static void HandleImmediateToRegister(StreamWriter writer, byte[] fileBytes, ref
     var reg = (byte)(fileBytes[i + 1] & 0b_111);
     var thirdByte = fileBytes[i + 2];
     var data = BitConverter.ToInt16(new byte[2] { thirdByte, 0 });
-    if (w_flag == 1)
+    if (mod == 0b_10)
     {
         var fourthByte = fileBytes.TryGetByteAtIndex(i + 3);
         var thirdAndFourthByte = new byte[2] { thirdByte, fourthByte };
