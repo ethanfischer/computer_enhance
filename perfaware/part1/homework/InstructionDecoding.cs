@@ -71,27 +71,37 @@ static Instruction DecodeInstruction(byte opcode)
     };
 }
 
-static string DecodeRegisterField(byte register, byte w_flag) =>
-    ((register << 1) | w_flag) switch
+static string DecodeRegisterField(byte register, byte w_flag, byte mod, byte[] fileBytes, int i)
+{
+    if (mod == 0b_00)
     {
-        0b_000_0 => "al",
-        0b_001_0 => "cl",
-        0b_010_0 => "dl",
-        0b_011_0 => "bl",
-        0b_100_0 => "ah",
-        0b_101_0 => "ch",
-        0b_110_0 => "dh",
-        0b_111_0 => "bh",
-        0b_000_1 => "ax",
-        0b_001_1 => "cx",
-        0b_010_1 => "dx",
-        0b_011_1 => "bx",
-        0b_100_1 => "sp",
-        0b_101_1 => "bp",
-        0b_110_1 => "si",
-        0b_111_1 => "di",
-        _ => throw new Exception($"{Convert.ToString(register, 2).PadLeft(3, '0')} register not found"),
-    };
+        var rm_mod = (byte)(register << 2 | mod);
+        return DecodeEffectiveAddressCalculation(rm_mod, fileBytes, i).decoded;
+    }
+    else
+    {
+        return ((register << 1) | w_flag) switch
+        {
+            0b_000_0 => "al",
+            0b_001_0 => "cl",
+            0b_010_0 => "dl",
+            0b_011_0 => "bl",
+            0b_100_0 => "ah",
+            0b_101_0 => "ch",
+            0b_110_0 => "dh",
+            0b_111_0 => "bh",
+            0b_000_1 => "ax",
+            0b_001_1 => "cx",
+            0b_010_1 => "dx",
+            0b_011_1 => "bx",
+            0b_100_1 => "sp",
+            0b_101_1 => "bp",
+            0b_110_1 => "si",
+            0b_111_1 => "di",
+            _ => throw new Exception($"{Convert.ToString(register, 2).PadLeft(3, '0')} register not found"),
+        };
+    }
+}
 
 static (string decoded, int indexIncrementAmount) DecodeEffectiveAddressCalculation(byte rm_mod, byte[] fileBytes, int i) =>
 (rm_mod) switch
@@ -138,9 +148,9 @@ static void HandleMovAddSubCmp(StreamWriter writer, byte[] fileBytes, ref int i,
         var (destination, source) = d_flag == 1 ? (reg, rm) : (rm, reg);
         writer.XWrite(instruction.ToString());
         writer.XWrite(" ");
-        writer.XWrite(DecodeRegisterField(destination, w_flag));
+        writer.XWrite(DecodeRegisterField(destination, w_flag, mod, fileBytes, i));
         writer.XWrite(", ");
-        writer.XWrite(DecodeRegisterField(source, w_flag));
+        writer.XWrite(DecodeRegisterField(source, w_flag, mod, fileBytes, i));
         writer.XWriteLine("");
         i += 2;
     }
@@ -150,9 +160,9 @@ static void HandleMovAddSubCmp(StreamWriter writer, byte[] fileBytes, ref int i,
         writer.XWrite(" ");
         var rm_mod = (byte)(rm << 2 | mod);
         var effectiveAddressCalculation = DecodeEffectiveAddressCalculation(rm_mod, fileBytes, i);
-        writer.XWrite(d_flag == 0 ? effectiveAddressCalculation.decoded : DecodeRegisterField(reg, w_flag));
+        writer.XWrite(d_flag == 0 ? effectiveAddressCalculation.decoded : DecodeRegisterField(reg, w_flag, mod, fileBytes, i));
         writer.XWrite(", ");
-        writer.XWrite(d_flag == 0 ? DecodeRegisterField(reg, w_flag) : effectiveAddressCalculation.decoded);
+        writer.XWrite(d_flag == 0 ? DecodeRegisterField(reg, w_flag, mod, fileBytes, i) : effectiveAddressCalculation.decoded);
         writer.XWriteLine("");
         i += effectiveAddressCalculation.indexIncrementAmount;
     }
@@ -179,7 +189,7 @@ static void HandleImmediateToRegister(StreamWriter writer, byte[] fileBytes, ref
 
     writer.XWrite(instruction.ToString());
     writer.XWrite(" ");
-    writer.XWrite(DecodeRegisterField(reg, w_flag));
+    writer.XWrite(DecodeRegisterField(reg, w_flag, mod, fileBytes, i));
     writer.XWrite(", ");
     writer.XWrite(data.ToString());
     writer.XWriteLine("");
