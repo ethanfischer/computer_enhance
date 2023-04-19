@@ -1,0 +1,15 @@
+/workspaces/computer_enhance/perfaware/sim86/shared/contrib_csharp/bin/Debug/net7.0/sim86
+/workspaces/computer_enhance/perfaware/sim86/shared/contrib_csharp/bin/Debug/net7.0/sim86.deps.json
+/workspaces/computer_enhance/perfaware/sim86/shared/contrib_csharp/bin/Debug/net7.0/sim86.runtimeconfig.json
+/workspaces/computer_enhance/perfaware/sim86/shared/contrib_csharp/bin/Debug/net7.0/sim86.dll
+/workspaces/computer_enhance/perfaware/sim86/shared/contrib_csharp/bin/Debug/net7.0/sim86.pdb
+/workspaces/computer_enhance/perfaware/sim86/shared/contrib_csharp/obj/Debug/net7.0/sim86.csproj.AssemblyReference.cache
+/workspaces/computer_enhance/perfaware/sim86/shared/contrib_csharp/obj/Debug/net7.0/sim86.GeneratedMSBuildEditorConfig.editorconfig
+/workspaces/computer_enhance/perfaware/sim86/shared/contrib_csharp/obj/Debug/net7.0/sim86.AssemblyInfoInputs.cache
+/workspaces/computer_enhance/perfaware/sim86/shared/contrib_csharp/obj/Debug/net7.0/sim86.AssemblyInfo.cs
+/workspaces/computer_enhance/perfaware/sim86/shared/contrib_csharp/obj/Debug/net7.0/sim86.csproj.CoreCompileInputs.cache
+/workspaces/computer_enhance/perfaware/sim86/shared/contrib_csharp/obj/Debug/net7.0/sim86.dll
+/workspaces/computer_enhance/perfaware/sim86/shared/contrib_csharp/obj/Debug/net7.0/refint/sim86.dll
+/workspaces/computer_enhance/perfaware/sim86/shared/contrib_csharp/obj/Debug/net7.0/sim86.pdb
+/workspaces/computer_enhance/perfaware/sim86/shared/contrib_csharp/obj/Debug/net7.0/sim86.genruntimeconfig.cache
+/workspaces/computer_enhance/perfaware/sim86/shared/contrib_csharp/obj/Debug/net7.0/ref/sim86.dll

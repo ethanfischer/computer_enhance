@@ -212,7 +212,7 @@ static class Sim86
 
     private static class Native
     {
-        const string dll = "sim86_shared_debug";
+        const string dll = "sim86_lib.so";
 
         public enum OperandType : uint
         {

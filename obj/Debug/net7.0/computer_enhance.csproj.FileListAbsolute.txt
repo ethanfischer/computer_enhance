@@ -1,0 +1,15 @@
+/workspaces/computer_enhance/bin/Debug/net7.0/computer_enhance
+/workspaces/computer_enhance/bin/Debug/net7.0/computer_enhance.deps.json
+/workspaces/computer_enhance/bin/Debug/net7.0/computer_enhance.runtimeconfig.json
+/workspaces/computer_enhance/bin/Debug/net7.0/computer_enhance.dll
+/workspaces/computer_enhance/bin/Debug/net7.0/computer_enhance.pdb
+/workspaces/computer_enhance/obj/Debug/net7.0/computer_enhance.csproj.AssemblyReference.cache
+/workspaces/computer_enhance/obj/Debug/net7.0/computer_enhance.GeneratedMSBuildEditorConfig.editorconfig
+/workspaces/computer_enhance/obj/Debug/net7.0/computer_enhance.AssemblyInfoInputs.cache
+/workspaces/computer_enhance/obj/Debug/net7.0/computer_enhance.AssemblyInfo.cs
+/workspaces/computer_enhance/obj/Debug/net7.0/computer_enhance.csproj.CoreCompileInputs.cache
+/workspaces/computer_enhance/obj/Debug/net7.0/computer_enhance.dll
+/workspaces/computer_enhance/obj/Debug/net7.0/refint/computer_enhance.dll
+/workspaces/computer_enhance/obj/Debug/net7.0/computer_enhance.pdb
+/workspaces/computer_enhance/obj/Debug/net7.0/computer_enhance.genruntimeconfig.cache
+/workspaces/computer_enhance/obj/Debug/net7.0/ref/computer_enhance.dll
