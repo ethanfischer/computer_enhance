@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 #pragma warning disable CS8603
 
-static class Sim86
+public static class Sim86
 {
     public enum OperationType : uint
     {

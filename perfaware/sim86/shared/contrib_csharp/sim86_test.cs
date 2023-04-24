@@ -3,37 +3,23 @@
 
 internal class Program
 {
-    static int[] Registers = new int[8];
+    private static int[] _registers = new int[8];
     private static void Main(string[] args)
     {
-        var ExampleDisassembly = File.ReadAllBytes("/home/ethan/repos/computer_enhance/perfaware/part1/listing_0043_immediate_movs");
+        var exampleDisassembly = File.ReadAllBytes("/home/ethan/repos/computer_enhance/perfaware/part1/listing_0043_immediate_movs");
         Console.WriteLine($"Sim86 Version: {Sim86.GetVersion()}");
 
-        var Table = Sim86.Get8086InstructionTable();
-        Console.WriteLine($"8086 Instruction Instruction Encoding Count: {Table.Encodings.Length}");
+        var table = Sim86.Get8086InstructionTable();
+        Console.WriteLine($"8086 Instruction Instruction Encoding Count: {table.Encodings.Length}");
 
-        var Offset = 0;
-        while (Offset < ExampleDisassembly.Length)
+        var offset = 0;
+        while (offset < exampleDisassembly.Length)
         {
-            var Decoded = Sim86.Decode8086Instruction(ExampleDisassembly.AsSpan().Slice(Offset));
-            Offset += Decoded.Size;
-            if (Decoded.Op != Sim86.OperationType.None)
+            var decoded = Sim86.Decode8086Instruction(exampleDisassembly.AsSpan().Slice(offset));
+            offset += decoded.Size;
+            if (decoded.Op == Sim86.OperationType.mov)
             {
-                if (Decoded.Op == Sim86.OperationType.mov)
-                {
-                    if (Decoded.Operands[0] is Sim86.RegisterAccess reg)
-                    {
-                        var registerName = Sim86.RegisterNameFromOperand(reg);
-                        var registerId = (RegisterId)Enum.Parse(typeof(RegisterId), registerName);
-                        if (Decoded.Operands[1] is Sim86.Immediate imm)
-                        {
-                            var register = Registers[(int)registerId];
-                            Console.WriteLine($"{Decoded.Op} {registerName}, {imm.Value} ; {registerName}:0x{register.ToString("X")}->0x{imm.Value.ToString("X")}");
-                            Registers[(int)registerId] = imm.Value;
-                        }
-                    }
-                }
-
+                decoded.Handle(_registers);
             }
             else
             {
@@ -42,14 +28,15 @@ internal class Program
             }
         }
 
-        for (var i = 0; i < Registers.Length; i++)
+        for (var i = 0; i < _registers.Length; i++)
         {
-            Console.WriteLine($"{(RegisterId)i}: {Registers[i]}");
+            Console.WriteLine($"{(RegisterId)i}: {_registers[i]}");
         }
     }
+
 }
 
-enum RegisterId
+public enum RegisterId
 {
     ax,
     bx,
