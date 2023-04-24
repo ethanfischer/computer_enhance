@@ -6,7 +6,7 @@ internal class Program
     private static int[] _registers = new int[8];
     private static void Main(string[] args)
     {
-        var exampleDisassembly = File.ReadAllBytes("/home/ethan/repos/computer_enhance/perfaware/part1/listing_0043_immediate_movs");
+        var exampleDisassembly = File.ReadAllBytes("/home/ethan/repos/computer_enhance/perfaware/part1/listing_0044_register_movs");
         Console.WriteLine($"Sim86 Version: {Sim86.GetVersion()}");
 
         var table = Sim86.Get8086InstructionTable();
