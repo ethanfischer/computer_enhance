@@ -4,9 +4,10 @@
 internal class Program
 {
     private static int[] _registers = new int[8];
+    private static ArithmeticFlags _arithmeticFlags;
     private static void Main(string[] args)
     {
-        var exampleDisassembly = File.ReadAllBytes("/home/ethan/repos/computer_enhance/perfaware/part1/listing_0044_register_movs");
+        var exampleDisassembly = File.ReadAllBytes("/home/ethan/repos/computer_enhance/perfaware/part1/listing_0046_add_sub_cmp");
         Console.WriteLine($"Sim86 Version: {Sim86.GetVersion()}");
 
         var table = Sim86.Get8086InstructionTable();
@@ -19,7 +20,19 @@ internal class Program
             offset += decoded.Size;
             if (decoded.Op == Sim86.OperationType.mov)
             {
-                decoded.Handle(_registers);
+                Mov.Handle(decoded, _registers);
+            }
+            else if (decoded.Op == Sim86.OperationType.add)
+            {
+                Add.Handle(decoded, _registers, _arithmeticFlags);
+            }
+            else if (decoded.Op == Sim86.OperationType.sub)
+            {
+                Sub.Handle(decoded, _registers, _arithmeticFlags);
+            }
+            else if (decoded.Op == Sim86.OperationType.cmp)
+            {
+                Cmp.Handle(decoded, _registers, _arithmeticFlags);
             }
             else
             {
@@ -46,4 +59,12 @@ public enum RegisterId
     bp,
     si,
     di
+}
+
+[Flags]
+public enum ArithmeticFlags
+{
+    Zero = 1,
+    Sign = 2,
+    Carry = 4,
 }
