@@ -24,15 +24,15 @@ internal class Program
             }
             else if (decoded.Op == Sim86.OperationType.add)
             {
-                Add.Handle(decoded, _registers, _arithmeticFlags);
+                _arithmeticFlags = Add.Handle(decoded, _registers, _arithmeticFlags);
             }
             else if (decoded.Op == Sim86.OperationType.sub)
             {
-                Sub.Handle(decoded, _registers, _arithmeticFlags);
+                _arithmeticFlags = Sub.Handle(decoded, _registers, _arithmeticFlags);
             }
             else if (decoded.Op == Sim86.OperationType.cmp)
             {
-                Cmp.Handle(decoded, _registers, _arithmeticFlags);
+                _arithmeticFlags = Cmp.Handle(decoded, _registers, _arithmeticFlags);
             }
             else
             {
@@ -41,10 +41,17 @@ internal class Program
             }
         }
 
+        Console.WriteLine("");
+        Console.WriteLine("Final registers:");
         for (var i = 0; i < _registers.Length; i++)
         {
-            Console.WriteLine($"{(RegisterId)i}: {_registers[i]}");
+            var value = _registers[i];
+            if(value == 0) continue;
+
+            Console.WriteLine($"\t{(RegisterId)i}: 0x{value.ToString("x")} ({value})");
         }
+        Console.WriteLine("");
+        Console.WriteLine($"flags: {InstructionUtils.GetZeroFlagText(_arithmeticFlags)}{InstructionUtils.GetSignedFlagText(_arithmeticFlags)}");
     }
 
 }
@@ -64,6 +71,7 @@ public enum RegisterId
 [Flags]
 public enum ArithmeticFlags
 {
+    None = 0,
     Zero = 1,
     Sign = 2,
     Carry = 4,

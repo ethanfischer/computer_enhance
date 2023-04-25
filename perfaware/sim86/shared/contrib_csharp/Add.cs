@@ -1,8 +1,9 @@
 using static Sim86;
+using static InstructionUtils;
 
 public static class Add
 {
-    public static void Handle(this Instruction decoded, int[] registers, ArithmeticFlags arithmeticFlags)
+    public static ArithmeticFlags Handle(this Instruction decoded, int[] registers, ArithmeticFlags arithmeticFlags)
     {
         if (decoded.Operands[0] is RegisterAccess destReg)
         {
@@ -11,16 +12,18 @@ public static class Add
 
             if (decoded.Operands[1] is Immediate imm)
             {
-                ImmediateToRegister(decoded, destRegisterName, destRegisterId, registers, imm, arithmeticFlags);
+                return ImmediateToRegister(decoded, destRegisterName, destRegisterId, registers, imm, arithmeticFlags);
             }
             else if (decoded.Operands[1] is RegisterAccess sourceReg)
             {
-                RegisterToRegister(decoded, destRegisterName, destRegisterId, registers, sourceReg, arithmeticFlags);
+                return RegisterToRegister(decoded, destRegisterName, destRegisterId, registers, sourceReg, arithmeticFlags);
             }
         }
+
+        throw new Exception();
     }
 
-    private static void RegisterToRegister(Instruction decoded, string destRegisterName, RegisterId destRegisterId, int[] registers, RegisterAccess sourceReg, ArithmeticFlags arithmeticFlags)
+    private static ArithmeticFlags RegisterToRegister(Instruction decoded, string destRegisterName, RegisterId destRegisterId, int[] registers, RegisterAccess sourceReg, ArithmeticFlags arithmeticFlags)
     {
         var sourceRegisterName = Sim86.RegisterNameFromOperand(sourceReg);
         var sourceRegisterId = (RegisterId)Enum.Parse(typeof(RegisterId), sourceRegisterName);
@@ -32,9 +35,10 @@ public static class Add
         var arithmeticFlagUpdateText = GetArithmeticFlagUpdateText(arithmeticFlags, updatedArithmeticFlags);
         Console.WriteLine($"{decoded.Op} {destRegisterName}, {sourceRegisterName} ; {destRegisterName}:0x{destRegister.ToString("x")}->0x{result.ToString("x")} {arithmeticFlagUpdateText}");
         registers[(int)destRegisterId] = result;
+        return updatedArithmeticFlags;
     }
 
-    public static void ImmediateToRegister(Instruction decoded, string destRegisterName, RegisterId destRegisterId, int[] registers, Immediate imm, ArithmeticFlags arithmeticFlags)
+    public static ArithmeticFlags ImmediateToRegister(Instruction decoded, string destRegisterName, RegisterId destRegisterId, int[] registers, Immediate imm, ArithmeticFlags arithmeticFlags)
     {
         var destRegister = registers[(int)destRegisterId];
         var result = destRegister + imm.Value;
@@ -42,41 +46,6 @@ public static class Add
         var arithmeticFlagUpdateText = GetArithmeticFlagUpdateText(arithmeticFlags, updatedArithmeticFlags);
         Console.WriteLine($"{decoded.Op} {destRegisterName}, {imm.Value} ; {destRegisterName}:0x{destRegister.ToString("x")}->0x{result.ToString("x")} {arithmeticFlagUpdateText}");
         registers[(int)destRegisterId] = result;
-    }
-
-
-    private static string GetArithmeticFlagUpdateText(ArithmeticFlags arithmeticFlags, ArithmeticFlags updatedArithmeticFlags)
-    {
-        var zeroFlagBefore = arithmeticFlags.HasFlag(ArithmeticFlags.Zero) ? "Z" : "";
-        var signedFlagBefore = arithmeticFlags.HasFlag(ArithmeticFlags.Sign) ? "S" : "";
-        var zerFlagAfter = updatedArithmeticFlags.HasFlag(ArithmeticFlags.Zero) ? "Z" : "";
-        var signedFlagAfter = updatedArithmeticFlags.HasFlag(ArithmeticFlags.Sign) ? "S" : "";
-        var beforeText = $"{zeroFlagBefore}{signedFlagBefore}";
-        var afterText = $"{zerFlagAfter}{signedFlagAfter}";
-        var arithmeticFlagUpdateText = (beforeText == afterText) ? "" : $"flags:{beforeText}->{afterText}";
-        return arithmeticFlagUpdateText;
-    }
-
-    private static ArithmeticFlags GetUpdatedArithmeticFlags(ArithmeticFlags _arithmeticFlags, int result)
-    {
-        var flagsResult = new ArithmeticFlags();
-        if (result == 0)
-        {
-            flagsResult = _arithmeticFlags | ArithmeticFlags.Zero;
-        }
-        else
-        {
-            flagsResult = _arithmeticFlags & ~ArithmeticFlags.Zero;
-        }
-        if ((result & 0x8000) != 0)
-        {
-            flagsResult = _arithmeticFlags | ArithmeticFlags.Sign;
-        }
-        else
-        {
-            flagsResult = _arithmeticFlags & ~ArithmeticFlags.Sign;
-        }
-
-        return flagsResult;
+        return updatedArithmeticFlags;
     }
 }

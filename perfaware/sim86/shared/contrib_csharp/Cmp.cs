@@ -1,8 +1,9 @@
 using static Sim86;
+using static InstructionUtils;
 
 public static class Cmp
 {
-    public static void Handle(this Instruction decoded, int[] registers, ArithmeticFlags _arithmeticFlags)
+    public static ArithmeticFlags Handle(this Instruction decoded, int[] registers, ArithmeticFlags _arithmeticFlags)
     {
         if (decoded.Operands[0] is RegisterAccess destReg)
         {
@@ -11,29 +12,40 @@ public static class Cmp
 
             if (decoded.Operands[1] is Immediate imm)
             {
-                ImmediateToRegister(decoded, destRegisterName, destRegisterId, registers, imm);
+                return ImmediateToRegister(decoded, destRegisterName, destRegisterId, registers, imm, _arithmeticFlags);
             }
             else if (decoded.Operands[1] is RegisterAccess sourceReg)
             {
-                RegisterToRegister(decoded, destRegisterName, destRegisterId, registers, sourceReg);
+                return RegisterToRegister(decoded, destRegisterName, destRegisterId, registers, sourceReg, _arithmeticFlags);
             }
         }
+
+        throw new Exception();
     }
 
-    private static void RegisterToRegister(Instruction decoded, string destRegisterName, RegisterId destRegisterId, int[] registers, RegisterAccess sourceReg)
+    private static ArithmeticFlags RegisterToRegister(Instruction decoded, string destRegisterName, RegisterId destRegisterId, int[] registers, RegisterAccess sourceReg, ArithmeticFlags arithmeticFlags)
     {
         var sourceRegisterName = Sim86.RegisterNameFromOperand(sourceReg);
         var sourceRegisterId = (RegisterId)Enum.Parse(typeof(RegisterId), sourceRegisterName);
         var sourceRegister = registers[(int)sourceRegisterId];
         var destRegister = registers[(int)destRegisterId];
-        Console.WriteLine($"{decoded.Op} {destRegisterName}, {sourceRegisterName} ; {destRegisterName}:0x{destRegister.ToString("x")}->0x{sourceRegister.ToString("x")}");
-        // registers[(int)destRegisterId] = sourceRegister;
+        var result = destRegister - sourceRegister;
+        
+        var updatedArithmeticFlags = GetUpdatedArithmeticFlags(arithmeticFlags, result);
+        var arithmeticFlagUpdateText = GetArithmeticFlagUpdateText(arithmeticFlags, updatedArithmeticFlags);
+        Console.WriteLine($"{decoded.Op} {destRegisterName}, {sourceRegisterName} ; {destRegisterName}:0x{destRegister.ToString("x")}->0x{result.ToString("x")} {arithmeticFlagUpdateText}");
+        return updatedArithmeticFlags;
     }
 
-    public static void ImmediateToRegister(Instruction decoded, string destRegisterName, RegisterId destRegisterId, int[] registers, Immediate imm)
+    public static ArithmeticFlags ImmediateToRegister(Instruction decoded, string destRegisterName, RegisterId destRegisterId, int[] registers, Immediate imm, ArithmeticFlags arithmeticFlags)
     {
         var destRegister = registers[(int)destRegisterId];
-        Console.WriteLine($"{decoded.Op} {destRegisterName}, {imm.Value} ; {destRegisterName}:0x{destRegister.ToString("x")}->0x{imm.Value.ToString("x")}");
-        // registers[(int)destRegisterId] = imm.Value;
+        var result = destRegister - imm.Value;
+
+        var updatedArithmeticFlags = GetUpdatedArithmeticFlags(arithmeticFlags, result);
+        var arithmeticFlagUpdateText = GetArithmeticFlagUpdateText(arithmeticFlags, updatedArithmeticFlags);
+
+        Console.WriteLine($"{decoded.Op} {destRegisterName}, {imm.Value} ; {destRegisterName}:0x{destRegister.ToString("x")}->0x{result.ToString("x")} {arithmeticFlagUpdateText}");
+        return updatedArithmeticFlags;
     }
 }
