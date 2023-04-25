@@ -26,14 +26,14 @@ public static class Cmp
         var sourceRegisterId = (RegisterId)Enum.Parse(typeof(RegisterId), sourceRegisterName);
         var sourceRegister = registers[(int)sourceRegisterId];
         var destRegister = registers[(int)destRegisterId];
-        Console.WriteLine($"{decoded.Op} {destRegisterName}, {sourceRegisterName} ; {destRegisterName}:0x{destRegister.ToString("X")}->0x{sourceRegister.ToString("X")}");
-        registers[(int)destRegisterId] = sourceRegister;
+        Console.WriteLine($"{decoded.Op} {destRegisterName}, {sourceRegisterName} ; {destRegisterName}:0x{destRegister.ToString("x")}->0x{sourceRegister.ToString("x")}");
+        // registers[(int)destRegisterId] = sourceRegister;
     }
 
     public static void ImmediateToRegister(Instruction decoded, string destRegisterName, RegisterId destRegisterId, int[] registers, Immediate imm)
     {
         var destRegister = registers[(int)destRegisterId];
-        Console.WriteLine($"{decoded.Op} {destRegisterName}, {imm.Value} ; {destRegisterName}:0x{destRegister.ToString("X")}->0x{imm.Value.ToString("X")}");
-        registers[(int)destRegisterId] = imm.Value;
+        Console.WriteLine($"{decoded.Op} {destRegisterName}, {imm.Value} ; {destRegisterName}:0x{destRegister.ToString("x")}->0x{imm.Value.ToString("x")}");
+        // registers[(int)destRegisterId] = imm.Value;
     }
 }
