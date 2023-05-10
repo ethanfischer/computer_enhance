@@ -7,7 +7,7 @@ internal class Program
     private static ArithmeticFlags _arithmeticFlags;
     private static void Main(string[] args)
     {
-        var exampleDisassembly = File.ReadAllBytes("/home/ethan/repos/computer_enhance/perfaware/part1/listing_0046_add_sub_cmp");
+        var exampleDisassembly = File.ReadAllBytes("/Users/ethanfischer/Repos/computer_enhance/perfaware/part1/listing_0046_add_sub_cmp");
         Console.WriteLine($"Sim86 Version: {Sim86.GetVersion()}");
 
         var table = Sim86.Get8086InstructionTable();

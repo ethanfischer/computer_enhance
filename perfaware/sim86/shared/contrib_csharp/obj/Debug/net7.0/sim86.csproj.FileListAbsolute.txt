@@ -1,0 +1,15 @@
+/Users/ethanfischer/Repos/computer_enhance/perfaware/sim86/shared/contrib_csharp/bin/Debug/net7.0/sim86
+/Users/ethanfischer/Repos/computer_enhance/perfaware/sim86/shared/contrib_csharp/bin/Debug/net7.0/sim86.deps.json
+/Users/ethanfischer/Repos/computer_enhance/perfaware/sim86/shared/contrib_csharp/bin/Debug/net7.0/sim86.runtimeconfig.json
+/Users/ethanfischer/Repos/computer_enhance/perfaware/sim86/shared/contrib_csharp/bin/Debug/net7.0/sim86.dll
+/Users/ethanfischer/Repos/computer_enhance/perfaware/sim86/shared/contrib_csharp/bin/Debug/net7.0/sim86.pdb
+/Users/ethanfischer/Repos/computer_enhance/perfaware/sim86/shared/contrib_csharp/obj/Debug/net7.0/sim86.csproj.AssemblyReference.cache
+/Users/ethanfischer/Repos/computer_enhance/perfaware/sim86/shared/contrib_csharp/obj/Debug/net7.0/sim86.GeneratedMSBuildEditorConfig.editorconfig
+/Users/ethanfischer/Repos/computer_enhance/perfaware/sim86/shared/contrib_csharp/obj/Debug/net7.0/sim86.AssemblyInfoInputs.cache
+/Users/ethanfischer/Repos/computer_enhance/perfaware/sim86/shared/contrib_csharp/obj/Debug/net7.0/sim86.AssemblyInfo.cs
+/Users/ethanfischer/Repos/computer_enhance/perfaware/sim86/shared/contrib_csharp/obj/Debug/net7.0/sim86.csproj.CoreCompileInputs.cache
+/Users/ethanfischer/Repos/computer_enhance/perfaware/sim86/shared/contrib_csharp/obj/Debug/net7.0/sim86.dll
+/Users/ethanfischer/Repos/computer_enhance/perfaware/sim86/shared/contrib_csharp/obj/Debug/net7.0/refint/sim86.dll
+/Users/ethanfischer/Repos/computer_enhance/perfaware/sim86/shared/contrib_csharp/obj/Debug/net7.0/sim86.pdb
+/Users/ethanfischer/Repos/computer_enhance/perfaware/sim86/shared/contrib_csharp/obj/Debug/net7.0/sim86.genruntimeconfig.cache
+/Users/ethanfischer/Repos/computer_enhance/perfaware/sim86/shared/contrib_csharp/obj/Debug/net7.0/ref/sim86.dll

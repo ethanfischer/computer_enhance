@@ -1,36 +1,37 @@
 {
   "version": 3,
   "targets": {
-    "net6.0": {}
+    "net7.0": {}
   },
   "libraries": {},
   "projectFileDependencyGroups": {
-    "net6.0": []
+    "net7.0": []
   },
   "packageFolders": {
-    "/home/ethan/.nuget/packages/": {}
+    "/Users/ethanfischer/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/ethan/repos/computer_enhance/perfaware/sim86/shared/contrib_csharp/sim86.csproj",
+      "projectUniqueName": "/Users/ethanfischer/Repos/computer_enhance/perfaware/sim86/shared/contrib_csharp/sim86.csproj",
       "projectName": "sim86",
-      "projectPath": "/home/ethan/repos/computer_enhance/perfaware/sim86/shared/contrib_csharp/sim86.csproj",
-      "packagesPath": "/home/ethan/.nuget/packages/",
-      "outputPath": "/home/ethan/repos/computer_enhance/perfaware/sim86/shared/contrib_csharp/obj/",
+      "projectPath": "/Users/ethanfischer/Repos/computer_enhance/perfaware/sim86/shared/contrib_csharp/sim86.csproj",
+      "packagesPath": "/Users/ethanfischer/.nuget/packages/",
+      "outputPath": "/Users/ethanfischer/Repos/computer_enhance/perfaware/sim86/shared/contrib_csharp/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/ethan/.nuget/NuGet/NuGet.Config"
+        "/Users/ethanfischer/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
-        "net6.0"
+        "net7.0"
       ],
       "sources": {
-        "https://api.nuget.org/v3/index.json": {}
+        "https://api.nuget.org/v3/index.json": {},
+        "https://incontextsolutions.pkgs.visualstudio.com/ICS/_packaging/InContextAzureDevopsFeed/nuget/v3/index.json": {}
       },
       "frameworks": {
-        "net6.0": {
-          "targetAlias": "net6.0",
+        "net7.0": {
+          "targetAlias": "net7.0",
           "projectReferences": {}
         }
       },
@@ -41,8 +42,8 @@
       }
     },
     "frameworks": {
-      "net6.0": {
-        "targetAlias": "net6.0",
+      "net7.0": {
+        "targetAlias": "net7.0",
         "imports": [
           "net461",
           "net462",
@@ -59,7 +60,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/7.0.203/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.203/RuntimeIdentifierGraph.json"
       }
     }
   }
