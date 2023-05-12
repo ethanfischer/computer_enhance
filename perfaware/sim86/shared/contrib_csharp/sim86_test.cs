@@ -4,7 +4,7 @@
 internal class Program
 {
     private static int[] _registers = new int[8];
-    private static ArithmeticFlags _arithmeticFlags;
+    private static OperationFlags _operationFlags;
     private static void Main(string[] args)
     {
         var exampleDisassembly = File.ReadAllBytes("/Users/ethanfischer/Repos/computer_enhance/perfaware/part1/listing_0048_ip_register");
@@ -24,15 +24,15 @@ internal class Program
             }
             else if (decoded.Op == Sim86.OperationType.add)
             {
-                _arithmeticFlags = Add.Handle(decoded, _registers, _arithmeticFlags);
+                _operationFlags = Add.Handle(decoded, _registers, _operationFlags);
             }
             else if (decoded.Op == Sim86.OperationType.sub)
             {
-                _arithmeticFlags = Sub.Handle(decoded, _registers, _arithmeticFlags);
+                _operationFlags = Sub.Handle(decoded, _registers, _operationFlags);
             }
             else if (decoded.Op == Sim86.OperationType.cmp)
             {
-                _arithmeticFlags = Cmp.Handle(decoded, _registers, _arithmeticFlags);
+                _operationFlags = Cmp.Handle(decoded, _registers, _operationFlags);
             }
             else
             {
@@ -51,7 +51,7 @@ internal class Program
             Console.WriteLine($"\t{(RegisterId)i}: 0x{value.ToString("x")} ({value})");
         }
         Console.WriteLine("");
-        Console.WriteLine($"flags: {InstructionUtils.GetZeroFlagText(_arithmeticFlags)}{InstructionUtils.GetSignedFlagText(_arithmeticFlags)}");
+        Console.WriteLine($"flags: {InstructionUtils.GetZeroFlagText(_operationFlags)}{InstructionUtils.GetSignedFlagText(_operationFlags)}");
     }
 
 }
@@ -69,7 +69,7 @@ public enum RegisterId
 }
 
 [Flags]
-public enum ArithmeticFlags
+public enum OperationFlags
 {
     None = 0,
     Zero = 1,
