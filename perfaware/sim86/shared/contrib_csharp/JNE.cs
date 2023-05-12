@@ -1,24 +1,22 @@
 namespace sim86;
 
-public static class JumpNotEqual
+public static class JNE
 {
-    public static ArithmeticFlags Handle(this Instruction decoded, int[] registers, ArithmeticFlags _arithmeticFlags)
+    public static void Handle(this Sim86.Instruction decoded, int[] registers, ArithmeticFlags arithmeticFlags)
     {
-        if (decoded.Operands[0] is RegisterAccess destReg)
+        var oldIp = registers[Sim86.IP];
+        registers[Sim86.IP] += decoded.Size;
+
+        if (decoded.Operands[0] is Sim86.Immediate imm)
         {
-            var destRegisterName = Sim86.RegisterNameFromOperand(destReg);
-            var destRegisterId = (RegisterId)Enum.Parse(typeof(RegisterId), destRegisterName);
+            if ((arithmeticFlags & ArithmeticFlags.Zero) == 0)
+            {
+                registers[Sim86.IP] += imm.Value;
+            }
 
-            if (decoded.Operands[1] is Immediate imm)
-            {
-                return ImmediateToRegister(decoded, destRegisterName, destRegisterId, registers, imm, _arithmeticFlags);
-            }
-            else if (decoded.Operands[1] is RegisterAccess sourceReg)
-            {
-                return RegisterToRegister(decoded, destRegisterName, destRegisterId, registers, sourceReg, _arithmeticFlags);
-            }
+
+            Console.WriteLine(
+                $"{decoded.Op} ${decoded.Size + imm.Value} ; {Sim86.IpDebugText(oldIp, registers[Sim86.IP])}");
         }
-
-        throw new Exception();
     }
 }

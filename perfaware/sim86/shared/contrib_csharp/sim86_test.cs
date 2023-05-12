@@ -1,13 +1,15 @@
 // place "sim86_shared_debug.dll" next to all of these three files (sim86.cs, sim86_test.cs, sim86.csproj)
 // then run "dotnet.exe run"
 
+using sim86;
+
 internal class Program
 {
     private static int[] _registers = new int[9];
     private static ArithmeticFlags _arithmeticFlags;
     private static void Main(string[] args)
     {
-        var exampleDisassembly = File.ReadAllBytes("/Users/ethanfischer/Repos/computer_enhance/perfaware/part1/listing_0048_ip_register");
+        var exampleDisassembly = File.ReadAllBytes("/Users/ethanfischer/Repos/computer_enhance/perfaware/part1/listing_0049_conditional_jumps");
         Console.WriteLine($"Sim86 Version: {Sim86.GetVersion()}");
 
         var table = Sim86.Get8086InstructionTable();
@@ -32,6 +34,10 @@ internal class Program
             else if (decoded.Op == Sim86.OperationType.cmp)
             {
                 _arithmeticFlags = Cmp.Handle(decoded, _registers, _arithmeticFlags);
+            }
+            else if (decoded.Op == Sim86.OperationType.jne)
+            {
+                JNE.Handle(decoded, _registers, _arithmeticFlags);
             }
             else
             {
