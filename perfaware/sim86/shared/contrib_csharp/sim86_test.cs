@@ -3,7 +3,7 @@
 
 internal class Program
 {
-    private static int[] _registers = new int[8];
+    private static int[] _registers = new int[9];
     private static ArithmeticFlags _arithmeticFlags;
     private static void Main(string[] args)
     {
@@ -13,11 +13,10 @@ internal class Program
         var table = Sim86.Get8086InstructionTable();
         Console.WriteLine($"8086 Instruction Instruction Encoding Count: {table.Encodings.Length}");
 
-        var offset = 0;
-        while (offset < exampleDisassembly.Length)
+        _registers.SetIP(0);
+        while (_registers[Sim86.IP] < exampleDisassembly.Length)
         {
-            var decoded = Sim86.Decode8086Instruction(exampleDisassembly.AsSpan().Slice(offset));
-            offset += decoded.Size;
+            var decoded = Sim86.Decode8086Instruction(exampleDisassembly.AsSpan().Slice(_registers[Sim86.IP]));
             if (decoded.Op == Sim86.OperationType.mov)
             {
                 Mov.Handle(decoded, _registers);
@@ -53,7 +52,6 @@ internal class Program
         Console.WriteLine("");
         Console.WriteLine($"flags: {InstructionUtils.GetZeroFlagText(_arithmeticFlags)}{InstructionUtils.GetSignedFlagText(_arithmeticFlags)}");
     }
-
 }
 
 public enum RegisterId
@@ -65,7 +63,8 @@ public enum RegisterId
     sp,
     bp,
     si,
-    di
+    di,
+    InstructionPointer
 }
 
 [Flags]

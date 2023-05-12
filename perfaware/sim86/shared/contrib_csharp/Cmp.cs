@@ -33,7 +33,11 @@ public static class Cmp
         
         var updatedArithmeticFlags = GetUpdatedArithmeticFlags(arithmeticFlags, result);
         var arithmeticFlagUpdateText = GetArithmeticFlagUpdateText(arithmeticFlags, updatedArithmeticFlags);
-        Console.WriteLine($"{decoded.Op} {destRegisterName}, {sourceRegisterName} ; {destRegisterName}:0x{destRegister.ToString("x")}->0x{result.ToString("x")} {arithmeticFlagUpdateText}");
+        
+        var oldId = registers[IP];
+        var newIp = registers[IP] + decoded.Size;
+        registers[IP] = newIp;
+        Console.WriteLine($"{decoded.Op} {destRegisterName}, {sourceRegisterName} ; {destRegisterName}:0x{destRegister.ToString("x")}->0x{result.ToString("x")} {arithmeticFlagUpdateText} {IpDebugText(oldId, newIp)}");
         return updatedArithmeticFlags;
     }
 
@@ -45,7 +49,11 @@ public static class Cmp
         var updatedArithmeticFlags = GetUpdatedArithmeticFlags(arithmeticFlags, result);
         var arithmeticFlagUpdateText = GetArithmeticFlagUpdateText(arithmeticFlags, updatedArithmeticFlags);
 
-        Console.WriteLine($"{decoded.Op} {destRegisterName}, {imm.Value} ; {destRegisterName}:0x{destRegister.ToString("x")}->0x{result.ToString("x")} {arithmeticFlagUpdateText}");
+        var oldId = registers[IP];
+        var newIp = registers[IP] + decoded.Size;
+        registers[IP] = newIp;
+        
+        Console.WriteLine($"{decoded.Op} {destRegisterName}, {imm.Value} ; {destRegisterName}:0x{destRegister.ToString("x")}->0x{result.ToString("x")} {arithmeticFlagUpdateText} {IpDebugText(oldId, newIp)}");
         return updatedArithmeticFlags;
     }
 }

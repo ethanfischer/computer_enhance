@@ -200,6 +200,7 @@ public static class Sim86
     public struct InstructionEncoding
     {
         public OperationType Op;
+
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
         public InstructionBits[] Bits;
     };
@@ -235,17 +236,13 @@ public static class Sim86
         [StructLayout(LayoutKind.Explicit)]
         public struct InstructionOperand
         {
-            [FieldOffset(0)]
-            public OperandType OpType;
+            [FieldOffset(0)] public OperandType OpType;
 
-            [FieldOffset(4)]
-            public EffectiveAddressExpression Address;
+            [FieldOffset(4)] public EffectiveAddressExpression Address;
 
-            [FieldOffset(4)]
-            public RegisterAccess Register;
+            [FieldOffset(4)] public RegisterAccess Register;
 
-            [FieldOffset(4)]
-            public Immediate Immediate;
+            [FieldOffset(4)] public Immediate Immediate;
         };
 
         [StructLayout(LayoutKind.Sequential)]
@@ -255,8 +252,10 @@ public static class Sim86
             public uint Size;
             public OperationType Op;
             public InstructionFlag Flags;
+
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
             public InstructionOperand[] Operands;
+
             public uint SegmentOverride;
         };
 
@@ -272,7 +271,8 @@ public static class Sim86
         public static extern uint Sim86_GetVersion();
 
         [DllImport(dll)]
-        public static extern void Sim86_Decode8086Instruction(uint SourceSize, [In] ref byte Source, out Instruction Dest);
+        public static extern void Sim86_Decode8086Instruction(uint SourceSize, [In] ref byte Source,
+            out Instruction Dest);
 
         [DllImport(dll)]
         public static extern IntPtr Sim86_RegisterNameFromOperand([In] ref RegisterAccess RegAccess);
@@ -294,7 +294,8 @@ public static class Sim86
     public static Instruction Decode8086Instruction(Span<byte> Source)
     {
         Native.Instruction NativeInstruction;
-        Native.Sim86_Decode8086Instruction((uint)Source.Length, ref MemoryMarshal.AsRef<byte>(Source), out NativeInstruction);
+        Native.Sim86_Decode8086Instruction((uint)Source.Length, ref MemoryMarshal.AsRef<byte>(Source),
+            out NativeInstruction);
 
         return new Instruction()
         {
@@ -350,9 +351,33 @@ public static class Sim86
         {
             Encodings = Enumerable
                 .Range(0, NativeTable.EncodingCount)
-                .Select(n => Marshal.PtrToStructure<InstructionEncoding>(NativeTable.Encodings + n * Marshal.SizeOf<InstructionEncoding>()))
+                .Select(n =>
+                    Marshal.PtrToStructure<InstructionEncoding>(NativeTable.Encodings +
+                                                                n * Marshal.SizeOf<InstructionEncoding>()))
                 .ToArray(),
             MaxInstructionByteCount = NativeTable.MaxInstructionByteCount,
         };
+    }
+
+    public static void SetIP(this int[] registers, int value)
+    {
+        registers[(int)RegisterId.InstructionPointer] = value;
+    }
+
+    public static int IP => (int)RegisterId.InstructionPointer;
+
+    public static string Hex(this int value)
+    {
+        return value.ToString("x");
+    }
+
+    public static string IpDebugText(int[] registers, int newIp)
+    {
+        return $"ip: 0x{registers[IP].Hex()}->0x{newIp.Hex()}";
+    }
+    
+    public static string IpDebugText(int oldIp, int newIp)
+    {
+        return $"ip: 0x{oldIp.Hex()}->0x{newIp.Hex()}";
     }
 }

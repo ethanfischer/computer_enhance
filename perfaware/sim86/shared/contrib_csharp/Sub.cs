@@ -5,22 +5,17 @@ public static class Sub
 {
     public static ArithmeticFlags Handle(this Instruction decoded, int[] registers, ArithmeticFlags _arithmeticFlags)
     {
-        if (decoded.Operands[0] is RegisterAccess destReg)
+        if (decoded.Operands[0] is not RegisterAccess destReg) throw new Exception();
+        
+        var destRegisterName = Sim86.RegisterNameFromOperand(destReg);
+        var destRegisterId = (RegisterId)Enum.Parse(typeof(RegisterId), destRegisterName);
+
+        return decoded.Operands[1] switch
         {
-            var destRegisterName = Sim86.RegisterNameFromOperand(destReg);
-            var destRegisterId = (RegisterId)Enum.Parse(typeof(RegisterId), destRegisterName);
-
-            if (decoded.Operands[1] is Immediate imm)
-            {
-                return ImmediateToRegister(decoded, destRegisterName, destRegisterId, registers, imm, _arithmeticFlags);
-            }
-            else if (decoded.Operands[1] is RegisterAccess sourceReg)
-            {
-                return RegisterToRegister(decoded, destRegisterName, destRegisterId, registers, sourceReg, _arithmeticFlags);
-            }
-        }
-
-        throw new Exception();
+            Immediate imm => ImmediateToRegister(decoded, destRegisterName, destRegisterId, registers, imm, _arithmeticFlags),
+            RegisterAccess sourceReg => RegisterToRegister(decoded, destRegisterName, destRegisterId, registers, sourceReg, _arithmeticFlags),
+            _ => throw new Exception()
+        };
     }
 
     private static ArithmeticFlags RegisterToRegister(Instruction decoded, string destRegisterName, RegisterId destRegisterId, int[] registers, RegisterAccess sourceReg, ArithmeticFlags arithmeticFlags)
@@ -29,24 +24,30 @@ public static class Sub
         var sourceRegisterId = (RegisterId)Enum.Parse(typeof(RegisterId), sourceRegisterName);
         var sourceRegister = registers[(int)sourceRegisterId];
         var destRegister = registers[(int)destRegisterId];
+        var oldId = registers[IP];
+        var newIp = registers[IP] + decoded.Size;
+        registers[IP] = newIp;
         var result = destRegister - sourceRegister;
         registers[(int)destRegisterId] = result;
         var updatedArithmeticFlags = GetUpdatedArithmeticFlags(arithmeticFlags, result);
         var arithmeticFlagUpdateText = GetArithmeticFlagUpdateText(arithmeticFlags, updatedArithmeticFlags);
-        Console.WriteLine($"{decoded.Op} {destRegisterName}, {sourceRegisterName} ; {destRegisterName}:0x{destRegister.ToString("x")}->0x{result.ToString("x")} {arithmeticFlagUpdateText}");
+        Console.WriteLine($"{decoded.Op} {destRegisterName}, {sourceRegisterName} ; {destRegisterName}:0x{destRegister.Hex()}->0x{result.Hex()} {arithmeticFlagUpdateText} {IpDebugText(oldId, newIp)}");
         return updatedArithmeticFlags;
     }
 
-    public static ArithmeticFlags ImmediateToRegister(Instruction decoded, string destRegisterName, RegisterId destRegisterId, int[] registers, Immediate imm, ArithmeticFlags arithmeticFlags)
+    private static ArithmeticFlags ImmediateToRegister(Instruction decoded, string destRegisterName, RegisterId destRegisterId, int[] registers, Immediate imm, ArithmeticFlags arithmeticFlags)
     {
         var destRegister = registers[(int)destRegisterId];
         var result = destRegister - imm.Value;
+        var oldId = registers[IP];
+        var newIp = registers[IP] + decoded.Size;
+        registers[IP] = newIp;
         registers[(int)destRegisterId] = result;
 
         var updatedArithmeticFlags = GetUpdatedArithmeticFlags(arithmeticFlags, result);
         var arithmeticFlagUpdateText = GetArithmeticFlagUpdateText(arithmeticFlags, updatedArithmeticFlags);
 
-        Console.WriteLine($"{decoded.Op} {destRegisterName}, {imm.Value} ; {destRegisterName}:0x{destRegister.ToString("x")}->0x{result.ToString("x")} {arithmeticFlagUpdateText}");
+        Console.WriteLine($"{decoded.Op} {destRegisterName}, {imm.Value} ; {destRegisterName}:0x{destRegister.Hex()}->0x{result.Hex()} {arithmeticFlagUpdateText} {IpDebugText(oldId, newIp)}");
 
         return updatedArithmeticFlags;
     }

@@ -14,8 +14,6 @@ public static class Add
             {
                 return ImmediateToRegister(decoded, destRegisterName, destRegisterId, registers, imm, arithmeticFlags);
             }
-            
-            
             else if (decoded.Operands[1] is RegisterAccess sourceReg)
             {
                 return RegisterToRegister(decoded, destRegisterName, destRegisterId, registers, sourceReg, arithmeticFlags);
@@ -35,7 +33,9 @@ public static class Add
         var result = destRegister + sourceRegister;
         var updatedArithmeticFlags = GetUpdatedArithmeticFlags(arithmeticFlags, result);
         var arithmeticFlagUpdateText = GetArithmeticFlagUpdateText(arithmeticFlags, updatedArithmeticFlags);
-        Console.WriteLine($"{decoded.Op} {destRegisterName}, {sourceRegisterName} ; {destRegisterName}:0x{destRegister.ToString("x")}->0x{result.ToString("x")} {arithmeticFlagUpdateText}");
+        var newIp = registers[IP] + decoded.Size;
+        Console.WriteLine($"{decoded.Op} {destRegisterName}, {sourceRegisterName} ; {destRegisterName}:0x{destRegister.Hex()}->0x{result.Hex()} {arithmeticFlagUpdateText} {IpDebugText(registers, newIp)}");
+        registers[IP] = newIp;
         registers[(int)destRegisterId] = result;
         return updatedArithmeticFlags;
     }
@@ -46,7 +46,9 @@ public static class Add
         var result = destRegister + imm.Value;
         var updatedArithmeticFlags = GetUpdatedArithmeticFlags(arithmeticFlags, result);
         var arithmeticFlagUpdateText = GetArithmeticFlagUpdateText(arithmeticFlags, updatedArithmeticFlags);
-        Console.WriteLine($"{decoded.Op} {destRegisterName}, {imm.Value} ; {destRegisterName}:0x{destRegister.ToString("x")}->0x{result.ToString("x")} {arithmeticFlagUpdateText}");
+        var newIp = registers[IP] + decoded.Size;
+        Console.WriteLine($"{decoded.Op} {destRegisterName}, {imm.Value} ; {destRegisterName}:0x{destRegister.Hex()}->0x{result.Hex()} {arithmeticFlagUpdateText} {IpDebugText(registers, newIp)}");
+        registers[IP] = newIp;
         registers[(int)destRegisterId] = result;
         return updatedArithmeticFlags;
     }
