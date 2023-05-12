@@ -34,20 +34,20 @@ public static class Add
         var updatedArithmeticFlags = GetUpdatedArithmeticFlags(arithmeticFlags, result);
         var arithmeticFlagUpdateText = GetArithmeticFlagUpdateText(arithmeticFlags, updatedArithmeticFlags);
         var newIp = registers[IP] + decoded.Size;
-        Console.WriteLine($"{decoded.Op} {destRegisterName}, {sourceRegisterName} ; {destRegisterName}:0x{destRegister.Hex()}->0x{result.Hex()} {arithmeticFlagUpdateText} {IpDebugText(registers, newIp)}");
+        Console.WriteLine($"{decoded.Op} {destRegisterName}, {sourceRegisterName} ; {destRegisterName}:0x{destRegister.Hex()}->0x{result.Hex()} {IpDebugText(registers, newIp)} {arithmeticFlagUpdateText} ");
         registers[IP] = newIp;
         registers[(int)destRegisterId] = result;
         return updatedArithmeticFlags;
     }
 
-    public static ArithmeticFlags ImmediateToRegister(Instruction decoded, string destRegisterName, RegisterId destRegisterId, int[] registers, Immediate imm, ArithmeticFlags arithmeticFlags)
+    private static ArithmeticFlags ImmediateToRegister(Instruction decoded, string destRegisterName, RegisterId destRegisterId, int[] registers, Immediate imm, ArithmeticFlags arithmeticFlags)
     {
         var destRegister = registers[(int)destRegisterId];
         var result = destRegister + imm.Value;
         var updatedArithmeticFlags = GetUpdatedArithmeticFlags(arithmeticFlags, result);
         var arithmeticFlagUpdateText = GetArithmeticFlagUpdateText(arithmeticFlags, updatedArithmeticFlags);
         var newIp = registers[IP] + decoded.Size;
-        Console.WriteLine($"{decoded.Op} {destRegisterName}, {imm.Value} ; {destRegisterName}:0x{destRegister.Hex()}->0x{result.Hex()} {arithmeticFlagUpdateText} {IpDebugText(registers, newIp)}");
+        Console.WriteLine($"{decoded.Op} {destRegisterName}, {imm.Value} ; {destRegisterName}:0x{destRegister.Hex()}->0x{result.Hex()} {IpDebugText(registers, newIp)} {arithmeticFlagUpdateText} ");
         registers[IP] = newIp;
         registers[(int)destRegisterId] = result;
         return updatedArithmeticFlags;

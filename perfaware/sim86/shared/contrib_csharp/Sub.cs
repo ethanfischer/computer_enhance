@@ -31,7 +31,7 @@ public static class Sub
         registers[(int)destRegisterId] = result;
         var updatedArithmeticFlags = GetUpdatedArithmeticFlags(arithmeticFlags, result);
         var arithmeticFlagUpdateText = GetArithmeticFlagUpdateText(arithmeticFlags, updatedArithmeticFlags);
-        Console.WriteLine($"{decoded.Op} {destRegisterName}, {sourceRegisterName} ; {destRegisterName}:0x{destRegister.Hex()}->0x{result.Hex()} {arithmeticFlagUpdateText} {IpDebugText(oldId, newIp)}");
+        Console.WriteLine($"{decoded.Op} {destRegisterName}, {sourceRegisterName} ; {destRegisterName}:0x{destRegister.Hex()}->0x{result.Hex()} {IpDebugText(oldId, newIp)} {arithmeticFlagUpdateText}");
         return updatedArithmeticFlags;
     }
 
@@ -47,7 +47,7 @@ public static class Sub
         var updatedArithmeticFlags = GetUpdatedArithmeticFlags(arithmeticFlags, result);
         var arithmeticFlagUpdateText = GetArithmeticFlagUpdateText(arithmeticFlags, updatedArithmeticFlags);
 
-        Console.WriteLine($"{decoded.Op} {destRegisterName}, {imm.Value} ; {destRegisterName}:0x{destRegister.Hex()}->0x{result.Hex()} {arithmeticFlagUpdateText} {IpDebugText(oldId, newIp)}");
+        Console.WriteLine($"{decoded.Op} {destRegisterName}, {imm.Value} ; {destRegisterName}:0x{destRegister.Hex()}->0x{result.Hex()} {IpDebugText(oldId, newIp)} {arithmeticFlagUpdateText} ");
 
         return updatedArithmeticFlags;
     }

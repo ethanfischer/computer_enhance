@@ -47,7 +47,7 @@ internal class Program
             var value = _registers[i];
             if(value == 0) continue;
 
-            Console.WriteLine($"\t{(RegisterId)i}: 0x{value.ToString("x")} ({value})");
+            Console.WriteLine($"\t{(RegisterId)i}: 0x{value.Hex()} ({value})");
         }
         Console.WriteLine("");
         Console.WriteLine($"flags: {InstructionUtils.GetZeroFlagText(_arithmeticFlags)}{InstructionUtils.GetSignedFlagText(_arithmeticFlags)}");

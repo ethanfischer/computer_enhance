@@ -28,7 +28,7 @@ public static class Mov
         var destRegister = registers[(int)destRegisterId];
         var newIp = registers[IP] + decoded.Size;
         Console.WriteLine(
-            $"{decoded.Op} {destRegisterName}, {sourceRegisterName} ; {destRegisterName}:0x{destRegister.ToString("X")}->0x{sourceRegister.ToString("X")} {IpDebugText(registers, newIp)}");
+            $"{decoded.Op} {destRegisterName}, {sourceRegisterName} ; {destRegisterName}:0x{destRegister.Hex()}->0x{sourceRegister.Hex()} {IpDebugText(registers, newIp)}");
         registers[IP] = newIp;
         registers[(int)destRegisterId] = sourceRegister;
     }
@@ -39,7 +39,7 @@ public static class Mov
         var destRegister = registers[(int)destRegisterId];
         var newIp = registers[IP] + decoded.Size;
         Console.WriteLine(
-            $"{decoded.Op} {destRegisterName}, {imm.Value} ; {destRegisterName}:0x{destRegister.ToString("X")}->0x{imm.Value.ToString("X")} {IpDebugText(registers, newIp)}");
+            $"{decoded.Op} {destRegisterName}, {imm.Value} ; {destRegisterName}:0x{destRegister.Hex()}->0x{imm.Value.Hex()} {IpDebugText(registers, newIp)}");
         registers[IP] = newIp;
         registers[(int)destRegisterId] = imm.Value;
     }
