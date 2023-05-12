@@ -1,45 +1,45 @@
 public static class InstructionUtils
 {
-    public static string GetArithmeticFlagUpdateText(OperationFlags operationFlags, OperationFlags updatedOperationFlags)
+    public static string GetArithmeticFlagUpdateText(ArithmeticFlags arithmeticFlags, ArithmeticFlags updatedArithmeticFlags)
     {
-        var zeroFlagBefore = GetZeroFlagText(operationFlags);
-        string signedFlagBefore = GetSignedFlagText(operationFlags);
-        var zerFlagAfter = GetZeroFlagText(updatedOperationFlags);
-        var signedFlagAfter = GetSignedFlagText(updatedOperationFlags);
+        var zeroFlagBefore = GetZeroFlagText(arithmeticFlags);
+        string signedFlagBefore = GetSignedFlagText(arithmeticFlags);
+        var zerFlagAfter = GetZeroFlagText(updatedArithmeticFlags);
+        var signedFlagAfter = GetSignedFlagText(updatedArithmeticFlags);
         var beforeText = $"{zeroFlagBefore}{signedFlagBefore}";
         var afterText = $"{zerFlagAfter}{signedFlagAfter}";
         var arithmeticFlagUpdateText = (beforeText == afterText) ? "" : $"flags:{beforeText}->{afterText}";
         return arithmeticFlagUpdateText;
     }
 
-    public static string GetSignedFlagText(OperationFlags operationFlags)
+    public static string GetSignedFlagText(ArithmeticFlags arithmeticFlags)
     {
-        return operationFlags.HasFlag(OperationFlags.Sign) ? "S" : "";
+        return arithmeticFlags.HasFlag(ArithmeticFlags.Sign) ? "S" : "";
     }
 
-    public static string GetZeroFlagText(OperationFlags operationFlags)
+    public static string GetZeroFlagText(ArithmeticFlags arithmeticFlags)
     {
-        return operationFlags.HasFlag(OperationFlags.Zero) ? "PZ" : "";
+        return arithmeticFlags.HasFlag(ArithmeticFlags.Zero) ? "PZ" : "";
     }
 
-    public static OperationFlags GetUpdatedArithmeticFlags(OperationFlags operationFlags, int result)
+    public static ArithmeticFlags GetUpdatedArithmeticFlags(ArithmeticFlags arithmeticFlags, int result)
     {
-        var updatedArithmeticFlags = new OperationFlags() | operationFlags;
+        var updatedArithmeticFlags = new ArithmeticFlags() | arithmeticFlags;
         if (result == 0)
         {
-            updatedArithmeticFlags = updatedArithmeticFlags | OperationFlags.Zero;
+            updatedArithmeticFlags = updatedArithmeticFlags | ArithmeticFlags.Zero;
         }
         else
         {
-            updatedArithmeticFlags = updatedArithmeticFlags & ~OperationFlags.Zero;
+            updatedArithmeticFlags = updatedArithmeticFlags & ~ArithmeticFlags.Zero;
         }
         if ((result & 0x8000) != 0)
         {
-            updatedArithmeticFlags = updatedArithmeticFlags | OperationFlags.Sign;
+            updatedArithmeticFlags = updatedArithmeticFlags | ArithmeticFlags.Sign;
         }
         else
         {
-            updatedArithmeticFlags = updatedArithmeticFlags & ~OperationFlags.Sign;
+            updatedArithmeticFlags = updatedArithmeticFlags & ~ArithmeticFlags.Sign;
         }
 
         return updatedArithmeticFlags;
