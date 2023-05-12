@@ -7,42 +7,56 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="31f1cb82-0b3f-4656-8b72-efe61c40de8b" name="Changes" comment="" />
+    <list default="true" id="31f1cb82-0b3f-4656-8b72-efe61c40de8b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.perfaware.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.perfaware.dir/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sim86/shared/contrib_csharp/Add.cs" beforeDir="false" afterPath="$PROJECT_DIR$/sim86/shared/contrib_csharp/Add.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sim86/shared/contrib_csharp/bin/Debug/net7.0/sim86.dll" beforeDir="false" afterPath="$PROJECT_DIR$/sim86/shared/contrib_csharp/bin/Debug/net7.0/sim86.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sim86/shared/contrib_csharp/bin/Debug/net7.0/sim86.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/sim86/shared/contrib_csharp/bin/Debug/net7.0/sim86.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sim86/shared/contrib_csharp/obj/Debug/net7.0/sim86.dll" beforeDir="false" afterPath="$PROJECT_DIR$/sim86/shared/contrib_csharp/obj/Debug/net7.0/sim86.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sim86/shared/contrib_csharp/obj/Debug/net7.0/sim86.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/sim86/shared/contrib_csharp/obj/Debug/net7.0/sim86.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sim86/shared/contrib_csharp/sim86_test.cs" beforeDir="false" afterPath="$PROJECT_DIR$/sim86/shared/contrib_csharp/sim86_test.cs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/sim86/shared/contrib_csharp/Add.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/sim86/shared/contrib_csharp/Sub.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/sim86/shared/contrib_csharp/sim86.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/sim86/shared/contrib_csharp/sim86_test.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectId" id="2Pb8vFnAHXmI71B80kSPnqBtB60" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;SolutionBuilderGeneralOptionsPage&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "rider.external.source.directories": [
-      "/Users/ethanfischer/Library/Application Support/JetBrains/Rider2023.1/resharper-host/DecompilerCache",
-      "/Users/ethanfischer/Library/Application Support/JetBrains/Rider2023.1/resharper-host/SourcesCache",
-      "/Users/ethanfischer/.local/share/Symbols/src"
+  &quot;keyToStringList&quot;: {
+    &quot;rider.external.source.directories&quot;: [
+      &quot;/Users/ethanfischer/Library/Application Support/JetBrains/Rider2023.1/resharper-host/DecompilerCache&quot;,
+      &quot;/Users/ethanfischer/Library/Application Support/JetBrains/Rider2023.1/resharper-host/SourcesCache&quot;,
+      &quot;/Users/ethanfischer/.local/share/Symbols/src&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="sim86" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="" />
@@ -52,11 +66,12 @@
       <option name="USE_EXTERNAL_CONSOLE" value="0" />
       <option name="USE_MONO" value="0" />
       <option name="RUNTIME_ARGUMENTS" value="" />
+      <option name="RUNTIME_TYPE" value="coreclr" />
       <option name="PROJECT_PATH" value="$PROJECT_DIR$/sim86/shared/contrib_csharp/sim86.csproj" />
       <option name="PROJECT_EXE_PATH_TRACKING" value="1" />
       <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
       <option name="PROJECT_WORKING_DIRECTORY_TRACKING" value="1" />
-      <option name="PROJECT_KIND" value="DotNetCore" />
+      <option name="PROJECT_KIND" value="Unloaded" />
       <option name="PROJECT_TFM" value="" />
       <method v="2">
         <option name="Build" />
@@ -72,7 +87,9 @@
       <option name="presentableId" value="Default" />
       <updated>1683714651065</updated>
       <workItem from="1683714652262" duration="145000" />
-      <workItem from="1683714798279" duration="4239000" />
+      <workItem from="1683714798279" duration="9542000" />
+      <workItem from="1683810142088" duration="4469000" />
+      <workItem from="1683858022187" duration="259000" />
     </task>
     <servers />
   </component>
@@ -82,5 +99,9 @@
   <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

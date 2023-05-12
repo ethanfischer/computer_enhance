@@ -14,6 +14,8 @@ public static class Add
             {
                 return ImmediateToRegister(decoded, destRegisterName, destRegisterId, registers, imm, arithmeticFlags);
             }
+            
+            
             else if (decoded.Operands[1] is RegisterAccess sourceReg)
             {
                 return RegisterToRegister(decoded, destRegisterName, destRegisterId, registers, sourceReg, arithmeticFlags);
