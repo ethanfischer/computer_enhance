@@ -7,4 +7,160 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Include="..\..\..\part1\listing_0037_single_register_mov">
+      <Link>part1\listing_0037_single_register_mov</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0037_single_register_mov.asm">
+      <Link>part1\listing_0037_single_register_mov.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0038_many_register_mov">
+      <Link>part1\listing_0038_many_register_mov</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0038_many_register_mov.asm">
+      <Link>part1\listing_0038_many_register_mov.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0039_more_movs">
+      <Link>part1\listing_0039_more_movs</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0039_more_movs.asm">
+      <Link>part1\listing_0039_more_movs.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0040_challenge_movs">
+      <Link>part1\listing_0040_challenge_movs</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0040_challenge_movs.asm">
+      <Link>part1\listing_0040_challenge_movs.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0041_add_sub_cmp_jnz">
+      <Link>part1\listing_0041_add_sub_cmp_jnz</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0041_add_sub_cmp_jnz.asm">
+      <Link>part1\listing_0041_add_sub_cmp_jnz.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0042_completionist_decode">
+      <Link>part1\listing_0042_completionist_decode</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0042_completionist_decode.asm">
+      <Link>part1\listing_0042_completionist_decode.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0043_immediate_movs">
+      <Link>part1\listing_0043_immediate_movs</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0043_immediate_movs.asm">
+      <Link>part1\listing_0043_immediate_movs.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0043_immediate_movs.txt">
+      <Link>part1\listing_0043_immediate_movs.txt</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0044_register_movs">
+      <Link>part1\listing_0044_register_movs</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0044_register_movs.asm">
+      <Link>part1\listing_0044_register_movs.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0044_register_movs.txt">
+      <Link>part1\listing_0044_register_movs.txt</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0045_challenge_register_movs">
+      <Link>part1\listing_0045_challenge_register_movs</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0045_challenge_register_movs.asm">
+      <Link>part1\listing_0045_challenge_register_movs.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0045_challenge_register_movs.txt">
+      <Link>part1\listing_0045_challenge_register_movs.txt</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0046_add_sub_cmp">
+      <Link>part1\listing_0046_add_sub_cmp</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0046_add_sub_cmp.asm">
+      <Link>part1\listing_0046_add_sub_cmp.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0046_add_sub_cmp.txt">
+      <Link>part1\listing_0046_add_sub_cmp.txt</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0047_challenge_flags">
+      <Link>part1\listing_0047_challenge_flags</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0047_challenge_flags.asm">
+      <Link>part1\listing_0047_challenge_flags.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0047_challenge_flags.txt">
+      <Link>part1\listing_0047_challenge_flags.txt</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0048_ip_register">
+      <Link>part1\listing_0048_ip_register</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0048_ip_register.asm">
+      <Link>part1\listing_0048_ip_register.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0048_ip_register.txt">
+      <Link>part1\listing_0048_ip_register.txt</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0049_conditional_jumps">
+      <Link>part1\listing_0049_conditional_jumps</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0049_conditional_jumps.asm">
+      <Link>part1\listing_0049_conditional_jumps.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0049_conditional_jumps.txt">
+      <Link>part1\listing_0049_conditional_jumps.txt</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0050_challenge_jumps">
+      <Link>part1\listing_0050_challenge_jumps</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0050_challenge_jumps.asm">
+      <Link>part1\listing_0050_challenge_jumps.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0050_challenge_jumps.txt">
+      <Link>part1\listing_0050_challenge_jumps.txt</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0051_memory_mov">
+      <Link>part1\listing_0051_memory_mov</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0051_memory_mov.asm">
+      <Link>part1\listing_0051_memory_mov.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0051_memory_mov.txt">
+      <Link>part1\listing_0051_memory_mov.txt</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0052_memory_add_loop">
+      <Link>part1\listing_0052_memory_add_loop</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0052_memory_add_loop.asm">
+      <Link>part1\listing_0052_memory_add_loop.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0052_memory_add_loop.txt">
+      <Link>part1\listing_0052_memory_add_loop.txt</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0053_add_loop_challenge">
+      <Link>part1\listing_0053_add_loop_challenge</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0053_add_loop_challenge.asm">
+      <Link>part1\listing_0053_add_loop_challenge.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0053_add_loop_challenge.txt">
+      <Link>part1\listing_0053_add_loop_challenge.txt</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0054_draw_rectangle">
+      <Link>part1\listing_0054_draw_rectangle</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0054_draw_rectangle.asm">
+      <Link>part1\listing_0054_draw_rectangle.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0054_draw_rectangle.txt">
+      <Link>part1\listing_0054_draw_rectangle.txt</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0055_challenge_rectangle">
+      <Link>part1\listing_0055_challenge_rectangle</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0055_challenge_rectangle.asm">
+      <Link>part1\listing_0055_challenge_rectangle.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0055_challenge_rectangle.txt">
+      <Link>part1\listing_0055_challenge_rectangle.txt</Link>
+    </Content>
+  </ItemGroup>
+
 </Project>
