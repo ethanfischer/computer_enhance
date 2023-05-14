@@ -5,11 +5,12 @@ using sim86;
 
 internal class Program
 {
+    private static byte[] _memory = new byte[1_048_576]; //1MB
     private static int[] _registers = new int[9];
     private static ArithmeticFlags _arithmeticFlags;
     private static void Main(string[] args)
     {
-        var exampleDisassembly = File.ReadAllBytes("/Users/ethanfischer/Repos/computer_enhance/perfaware/part1/listing_0049_conditional_jumps");
+        var exampleDisassembly = File.ReadAllBytes("/Users/ethanfischer/Repos/computer_enhance/perfaware/part1/listing_0051_memory_mov");
         Console.WriteLine($"Sim86 Version: {Sim86.GetVersion()}");
 
         var table = Sim86.Get8086InstructionTable();
@@ -21,7 +22,7 @@ internal class Program
             var decoded = Sim86.Decode8086Instruction(exampleDisassembly.AsSpan().Slice(_registers[Sim86.IP]));
             if (decoded.Op == Sim86.OperationType.mov)
             {
-                Mov.Handle(decoded, _registers);
+                Mov.Handle(decoded, _registers, _memory);
             }
             else if (decoded.Op == Sim86.OperationType.add)
             {

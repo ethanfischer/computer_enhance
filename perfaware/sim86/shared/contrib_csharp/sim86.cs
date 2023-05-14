@@ -380,4 +380,12 @@ public static class Sim86
     {
         return $"ip: 0x{oldIp.Hex()}->0x{newIp.Hex()}";
     }
+
+    public struct DebugInfo
+    {
+        public string OpName;
+        public string SourceRegister;
+        public int NewIP;
+        public int OldIP;
+    }
 }
