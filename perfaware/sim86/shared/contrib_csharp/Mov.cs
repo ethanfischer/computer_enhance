@@ -59,33 +59,28 @@ public static class Mov
     private static void StoreInMemory(byte[] memory, EffectiveAddressExpression eff, int value, int[] registers,
         DebugInfo debug)
     {
-        var registerName = Sim86.RegisterNameFromOperand(eff.Term[0].Register);
-        if (registerName != "")
-        {
-            var registerId = (RegisterId)Enum.Parse(typeof(RegisterId), registerName);
-            var registerValue = registers[(int)registerId];
-            Console.WriteLine(
-                $"{debug.OpName} [{registerName}+{eff.Displacement}], {debug.SourceRegister} ; {IpDebugText(debug.OldIP, debug.NewIP)}");
-            memory[registerValue + eff.Displacement] = value.LowByte();
-            memory[registerValue + eff.Displacement + 1] = value.HighByte();
-        }
-        else
-        {
-            Console.WriteLine(
-                $"{debug.OpName} [{eff.Displacement}], {debug.SourceRegister} ; {IpDebugText(debug.OldIP, debug.NewIP)}");
-            memory[eff.Displacement] = value.LowByte();
-            memory[eff.Displacement + 1] = value.HighByte();
-        }
+        var reg1 = eff.Term[0].GetRegisterValue(registers);
+        var reg2 = eff.Term[1].GetRegisterValue(registers);
+        var memoryAddress = eff.Displacement + reg1 + reg2;
+
+        Console.WriteLine(
+            $"{debug.OpName} [{eff.GetRegisterNames()}+{eff.Displacement}], {debug.SourceRegister} ; {IpDebugText(debug.OldIP, debug.NewIP)}");
+
+        memory[memoryAddress] = value.LowByte();
+        memory[memoryAddress + 1] = value.HighByte();
     }
 
     private static void LoadFromMemory(Instruction decoded, string destRegisterName, RegisterId destRegisterId,
-        int[] registers, EffectiveAddressExpression eae, byte[] memory)
+        int[] registers, EffectiveAddressExpression eff, byte[] memory)
     {
+        var reg1 = eff.Term[0].GetRegisterValue(registers);
+        var reg2 = eff.Term[1].GetRegisterValue(registers);
+        var memoryAddress = eff.Displacement + reg1 + reg2;
         var destRegister = registers[(int)destRegisterId];
         var newIp = registers[IP] + decoded.Size;
-        var value = memory[eae.Displacement] | (memory[eae.Displacement + 1] << 8);
+        var value = memory[memoryAddress] | (memory[memoryAddress + 1] << 8);
         Console.WriteLine(
-            $"{decoded.Op} {destRegisterName}, {eae.Displacement} ; {destRegisterName}:0x{destRegister.Hex()}->0x{value.Hex()} {IpDebugText(registers, newIp)}");
+            $"{decoded.Op} {destRegisterName}, {eff.GetRegisterNames()}+{eff.Displacement} ; {destRegisterName}:0x{destRegister.Hex()}->0x{value.Hex()} {IpDebugText(registers, newIp)}");
         registers[IP] = newIp;
         registers[(int)destRegisterId] = value;
     }
@@ -123,5 +118,24 @@ public static class Mov
     private static byte HighByte(this int value)
     {
         return (byte)((value >> 8) & 0xFF);
+    }
+
+    private static int GetRegisterValue(this EffectiveAddressTerm term, int[] registers)
+    {
+        var registerName = Sim86.RegisterNameFromOperand(term.Register);
+        if (registerName == "") return 0;
+        var registerId = (RegisterId)Enum.Parse(typeof(RegisterId), registerName);
+        var registerValue = registers[(int)registerId];
+        return registerValue;
+    }
+
+    private static string GetRegisterNames(this EffectiveAddressExpression eff)
+    {
+        var result = "";
+        var reg1Name = RegisterNameFromOperand(eff.Term[0].Register);
+        var reg2Name = RegisterNameFromOperand(eff.Term[1].Register);
+        if (reg1Name != "") result += reg1Name;
+        if (reg2Name != "") result += $" + {reg2Name}";
+        return result;
     }
 }
