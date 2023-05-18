@@ -161,6 +161,24 @@
     <Content Include="..\..\..\part1\listing_0055_challenge_rectangle.txt">
       <Link>part1\listing_0055_challenge_rectangle.txt</Link>
     </Content>
+    <Content Include="..\..\..\part1\listing_0056_estimating_cycles">
+      <Link>part1\listing_0056_estimating_cycles</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0056_estimating_cycles.asm">
+      <Link>part1\listing_0056_estimating_cycles.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0056_estimating_cycles.txt">
+      <Link>part1\listing_0056_estimating_cycles.txt</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0057_challenge_cycles">
+      <Link>part1\listing_0057_challenge_cycles</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0057_challenge_cycles.asm">
+      <Link>part1\listing_0057_challenge_cycles.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0057_challenge_cycles.txt">
+      <Link>part1\listing_0057_challenge_cycles.txt</Link>
+    </Content>
   </ItemGroup>
 
 </Project>

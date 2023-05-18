@@ -31,10 +31,10 @@ public static class Mov
             {
                 case RegisterAccess sourceReg:
                 {
-                    var sourceRegisterName = Sim86.RegisterNameFromOperand(sourceReg);
+                    var sourceRegisterName = RegisterNameFromOperand(sourceReg);
                     var sourceRegisterId = (RegisterId)Enum.Parse(typeof(RegisterId), sourceRegisterName);
                     var registerValue = registers[(int)sourceRegisterId];
-                    StoreInMemory(memory, eff, registerValue, registers, new DebugInfo()
+                    StoreInMemory(memory, eff, registerValue, registers, new DebugInfo
                     {
                         OpName = decoded.Op.ToString(),
                         SourceRegister = sourceRegisterName,
@@ -44,7 +44,7 @@ public static class Mov
                     break;
                 }
                 case Immediate imm:
-                    StoreInMemory(memory, eff, imm.Value, registers, new DebugInfo()
+                    StoreInMemory(memory, eff, imm.Value, registers, new DebugInfo
                     {
                         OpName = decoded.Op.ToString(),
                         SourceRegister = imm.Value.ToString(),
@@ -56,7 +56,7 @@ public static class Mov
         }
     }
 
-    private static void StoreInMemory(byte[] memory, EffectiveAddressExpression eff, int value, int[] registers,
+    private static void StoreInMemory(IList<byte> memory, EffectiveAddressExpression eff, int value, int[] registers,
         DebugInfo debug)
     {
         var reg1 = eff.Term[0].GetRegisterValue(registers);
@@ -64,14 +64,16 @@ public static class Mov
         var memoryAddress = eff.Displacement + reg1 + reg2;
 
         Console.WriteLine(
-            $"{debug.OpName} [{eff.GetRegisterNames()}+{eff.Displacement}], {debug.SourceRegister} ; {IpDebugText(debug.OldIP, debug.NewIP)}");
+            $"{debug.OpName} [{eff.GetRegisterNames()}+{eff.Displacement}], {debug.SourceRegister} ;" +
+            LogClocks(9 + EffectiveAddressCalcClocks(eff), $"9 + {EffectiveAddressCalcClocks(eff)}ea") +
+            $" {IpDebugText(debug.OldIP, debug.NewIP)}");
 
         memory[memoryAddress] = value.LowByte();
         memory[memoryAddress + 1] = value.HighByte();
     }
 
     private static void LoadFromMemory(Instruction decoded, string destRegisterName, RegisterId destRegisterId,
-        int[] registers, EffectiveAddressExpression eff, byte[] memory)
+        int[] registers, EffectiveAddressExpression eff, IReadOnlyList<byte> memory)
     {
         var reg1 = eff.Term[0].GetRegisterValue(registers);
         var reg2 = eff.Term[1].GetRegisterValue(registers);
@@ -80,7 +82,9 @@ public static class Mov
         var newIp = registers[IP] + decoded.Size;
         var value = memory[memoryAddress] | (memory[memoryAddress + 1] << 8);
         Console.WriteLine(
-            $"{decoded.Op} {destRegisterName}, {eff.GetRegisterNames()}+{eff.Displacement} ; {destRegisterName}:0x{destRegister.Hex()}->0x{value.Hex()} {IpDebugText(registers, newIp)}");
+            $"{decoded.Op} {destRegisterName}, {eff.GetRegisterNames()}+{eff.Displacement} ;" +
+            LogClocks(8 + EffectiveAddressCalcClocks(eff), $"(8 + {EffectiveAddressCalcClocks(eff)}ea)") +
+            $" {destRegisterName}:0x{destRegister.Hex()}->0x{value.Hex()} {IpDebugText(registers, newIp)}");
         registers[IP] = newIp;
         registers[(int)destRegisterId] = value;
     }
@@ -88,13 +92,15 @@ public static class Mov
     private static void RegisterToRegister(Instruction decoded, string destRegisterName, RegisterId destRegisterId,
         int[] registers, RegisterAccess sourceReg)
     {
-        var sourceRegisterName = Sim86.RegisterNameFromOperand(sourceReg);
+        var sourceRegisterName = RegisterNameFromOperand(sourceReg);
         var sourceRegisterId = (RegisterId)Enum.Parse(typeof(RegisterId), sourceRegisterName);
         var sourceRegister = registers[(int)sourceRegisterId];
         var destRegister = registers[(int)destRegisterId];
         var newIp = registers[IP] + decoded.Size;
         Console.WriteLine(
-            $"{decoded.Op} {destRegisterName}, {sourceRegisterName} ; {destRegisterName}:0x{destRegister.Hex()}->0x{sourceRegister.Hex()} {IpDebugText(registers, newIp)}");
+            $"{decoded.Op} {destRegisterName}, {sourceRegisterName} ;" +
+            LogClocks(2) +
+            $" {destRegisterName}:0x{destRegister.Hex()}->0x{sourceRegister.Hex()} {IpDebugText(registers, newIp)}");
         registers[IP] = newIp;
         registers[(int)destRegisterId] = sourceRegister;
     }
@@ -105,37 +111,11 @@ public static class Mov
         var destRegister = registers[(int)destRegisterId];
         var newIp = registers[IP] + decoded.Size;
         Console.WriteLine(
-            $"{decoded.Op} {destRegisterName}, {imm.Value} ; {destRegisterName}:0x{destRegister.Hex()}->0x{imm.Value.Hex()} {IpDebugText(registers, newIp)}");
+            $"{decoded.Op} {destRegisterName}, {imm.Value} ;" +
+            LogClocks(4) +
+            $" {destRegisterName}:0x{destRegister.Hex()}->0x{imm.Value.Hex()} {IpDebugText(registers, newIp)}");
         registers[IP] = newIp;
         registers[(int)destRegisterId] = imm.Value;
     }
 
-    private static byte LowByte(this int value)
-    {
-        return (byte)(value & 0xFF);
-    }
-
-    private static byte HighByte(this int value)
-    {
-        return (byte)((value >> 8) & 0xFF);
-    }
-
-    private static int GetRegisterValue(this EffectiveAddressTerm term, int[] registers)
-    {
-        var registerName = Sim86.RegisterNameFromOperand(term.Register);
-        if (registerName == "") return 0;
-        var registerId = (RegisterId)Enum.Parse(typeof(RegisterId), registerName);
-        var registerValue = registers[(int)registerId];
-        return registerValue;
-    }
-
-    private static string GetRegisterNames(this EffectiveAddressExpression eff)
-    {
-        var result = "";
-        var reg1Name = RegisterNameFromOperand(eff.Term[0].Register);
-        var reg2Name = RegisterNameFromOperand(eff.Term[1].Register);
-        if (reg1Name != "") result += reg1Name;
-        if (reg2Name != "") result += $" + {reg2Name}";
-        return result;
-    }
 }

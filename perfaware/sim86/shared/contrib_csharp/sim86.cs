@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 
 public static class Sim86
 {
+    private static int _clocksCount;
+
     public enum OperationType : uint
     {
         None,
@@ -387,5 +389,63 @@ public static class Sim86
         public string SourceRegister;
         public int NewIP;
         public int OldIP;
+    }
+
+    public static string LogClocks(int clocks, string calculation = "")
+    {
+        _clocksCount += clocks;
+        return $"Clocks: +{clocks} = {_clocksCount} {calculation} | ";
+    }
+
+    public static int EffectiveAddressCalcClocks(EffectiveAddressExpression eff)
+    {
+        var reg1 = RegisterNameFromOperand(eff.Term[0].Register).ToLower();
+        var reg2 = RegisterNameFromOperand(eff.Term[1].Register);
+        if((reg1 == "" && reg2 == "") && eff.Displacement != 0) // Displacement only
+            return 6;
+        if(reg1 is "bx" or "bp" or "si" or "di" && eff.Displacement == 0) //Base or index only
+            return 5;
+        if(eff.Displacement != 0 && (reg1 != "" || reg2 != "")) //Displacement + Base or index
+            return 9;
+        if((reg1 is "bp" && reg2 is "di") || (reg1 is "bx" && reg2 is "si")) //Base + index
+            return 7;
+        if((reg1 is "bp" && reg2 is "si") || (reg1 is "bx" && reg2 is "di")) //Base + index
+            return 8;
+        if(eff.Displacement != 0 && reg1 is "bp" && reg2 is "di" || (reg1 is "bx" && reg2 is "si")) //Displacement + Base + index
+            return 11;
+        if(eff.Displacement != 0 && reg1 is "bp" && reg2 is "si" || (reg1 is "bx" && reg2 is "di")) //Displacement + Base + index
+            return 12;
+        throw new NotImplementedException();
+    }
+    
+    
+    public static int GetRegisterValue(this EffectiveAddressTerm term, int[] registers)
+    {
+        var registerName = Sim86.RegisterNameFromOperand(term.Register);
+        if (registerName == "") return 0;
+        var registerId = (RegisterId)Enum.Parse(typeof(RegisterId), registerName);
+        var registerValue = registers[(int)registerId];
+        return registerValue;
+    }
+
+    public static string GetRegisterNames(this EffectiveAddressExpression eff)
+    {
+        var result = "";
+        var reg1Name = RegisterNameFromOperand(eff.Term[0].Register);
+        var reg2Name = RegisterNameFromOperand(eff.Term[1].Register);
+        if (reg1Name != "") result += reg1Name;
+        if (reg2Name != "") result += $" + {reg2Name}";
+        return result;
+    }
+    
+    
+    public static byte LowByte(this int value)
+    {
+        return (byte)(value & 0xFF);
+    }
+
+    public static byte HighByte(this int value)
+    {
+        return (byte)((value >> 8) & 0xFF);
     }
 }

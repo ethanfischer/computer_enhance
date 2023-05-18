@@ -28,7 +28,7 @@ internal class Program
             }
             else if (decoded.Op == Sim86.OperationType.add)
             {
-                _arithmeticFlags = Add.Handle(decoded, _registers, _arithmeticFlags);
+                _arithmeticFlags = Add.Handle(decoded, _registers, _arithmeticFlags, _memory);
             }
             else if (decoded.Op == Sim86.OperationType.sub)
             {
@@ -70,7 +70,7 @@ internal class Program
 
     private static int ReadFileContentsIntoMemory()
     {
-        const string filePath = "/Users/ethanfischer/Repos/computer_enhance/perfaware/part1/listing_0054_draw_rectangle";
+        const string filePath = "/Users/ethanfischer/Repos/computer_enhance/perfaware/part1/listing_0056_estimating_cycles";
         using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
         int bytesRead;
         var offset = 0;
