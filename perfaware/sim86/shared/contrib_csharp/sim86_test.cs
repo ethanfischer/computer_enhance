@@ -11,7 +11,7 @@ internal class Program
 
     private static void Main(string[] args)
     {
-        var lastInstructionIndex = ReadFileContentsIntoMemory();
+        var lastInstructionIndex = ReadFileContentsIntoMemory("/Users/ethanfischer/Repos/computer_enhance/perfaware/part1/listing_0056_estimating_cycles");
 
         Console.WriteLine($"Sim86 Version: {Sim86.GetVersion()}");
 
@@ -68,9 +68,8 @@ internal class Program
             _memory);
     }
 
-    private static int ReadFileContentsIntoMemory()
+    private static int ReadFileContentsIntoMemory(string filePath)
     {
-        const string filePath = "/Users/ethanfischer/Repos/computer_enhance/perfaware/part1/listing_0056_estimating_cycles";
         using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
         int bytesRead;
         var offset = 0;
