@@ -418,7 +418,6 @@ public static class Sim86
         throw new NotImplementedException();
     }
     
-    
     public static int GetRegisterValue(this EffectiveAddressTerm term, int[] registers)
     {
         var registerName = Sim86.RegisterNameFromOperand(term.Register);
@@ -437,7 +436,6 @@ public static class Sim86
         if (reg2Name != "") result += $" + {reg2Name}";
         return result;
     }
-    
     
     public static byte LowByte(this int value)
     {

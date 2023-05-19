@@ -179,6 +179,66 @@
     <Content Include="..\..\..\part1\listing_0057_challenge_cycles.txt">
       <Link>part1\listing_0057_challenge_cycles.txt</Link>
     </Content>
+    <Content Include="..\..\..\part1\listing_0059_SingleScalar">
+      <Link>part1\listing_0059_SingleScalar</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0059_SingleScalar.asm">
+      <Link>part1\listing_0059_SingleScalar.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0059_SingleScalar.txt">
+      <Link>part1\listing_0059_SingleScalar.txt</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0060_Unroll2Scalar">
+      <Link>part1\listing_0060_Unroll2Scalar</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0060_Unroll2Scalar.asm">
+      <Link>part1\listing_0060_Unroll2Scalar.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0060_Unroll2Scalar.txt">
+      <Link>part1\listing_0060_Unroll2Scalar.txt</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0061_DualScalar">
+      <Link>part1\listing_0061_DualScalar</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0061_DualScalar.asm">
+      <Link>part1\listing_0061_DualScalar.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0061_DualScalar.txt">
+      <Link>part1\listing_0061_DualScalar.txt</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0062_QuadScalar">
+      <Link>part1\listing_0062_QuadScalar</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0062_QuadScalar.asm">
+      <Link>part1\listing_0062_QuadScalar.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0062_QuadScalar.txt">
+      <Link>part1\listing_0062_QuadScalar.txt</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0063_QuadScalarPtr">
+      <Link>part1\listing_0063_QuadScalarPtr</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0063_QuadScalarPtr.asm">
+      <Link>part1\listing_0063_QuadScalarPtr.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0063_QuadScalarPtr.txt">
+      <Link>part1\listing_0063_QuadScalarPtr.txt</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0064_TreeScalarPtr">
+      <Link>part1\listing_0064_TreeScalarPtr</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0064_TreeScalarPtr.asm">
+      <Link>part1\listing_0064_TreeScalarPtr.asm</Link>
+    </Content>
+    <Content Include="..\..\..\part1\listing_0064_TreeScalarPtr.txt">
+      <Link>part1\listing_0064_TreeScalarPtr.txt</Link>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClCompile Include="..\..\..\part1\listing_0058_prologue_sum_loops.cpp">
+      <Link>part1\listing_0058_prologue_sum_loops.cpp</Link>
+    </ClCompile>
   </ItemGroup>
 
 </Project>
