@@ -96,7 +96,7 @@ public static class JsonParser
         foreach (var b in jsonBytes)
         {
             var ch = (char)b;
-            Console.WriteLine($"{ch}, {b.Binary()}");
+            // Console.WriteLine($"{ch}, {b.Binary()}");
 
             if (_isLookingForClosingBrace)
             {
