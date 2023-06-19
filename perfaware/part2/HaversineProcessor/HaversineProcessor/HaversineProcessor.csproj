@@ -7,4 +7,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+      <Exec Command="copy /Y &quot;C:\Users\ethan.fischer\GitProjects\Rdtsc\Rdtsc\x64\Debug\Rdtsc.dll&quot; &quot;$(TargetDir)&quot;" />
+    </Target>
+
 </Project>
