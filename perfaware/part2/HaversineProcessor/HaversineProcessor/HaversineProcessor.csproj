@@ -5,11 +5,14 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <LangVersion>10</LangVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <PlatformTarget>ARM64</PlatformTarget>
     </PropertyGroup>
 
-
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-      <Exec Command="copy /Y &quot;C:\Users\ethan.fischer\GitProjects\Rdtsc\Rdtsc\x64\Debug\Rdtsc.dll&quot; &quot;$(TargetDir)&quot;" />
+        <Exec Command="cp &quot;/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/mach_absolute_time/libtimer.dylib&quot; &quot;$(TargetDir)&quot;&#xA;" />
     </Target>
 
 </Project>
