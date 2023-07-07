@@ -8,6 +8,8 @@ public static class JsonParser
 
     public static List<Pair> Deserialize(byte[] jsonBytes)
     {
+        // using var _ = Profiler.TimeFunction();
+        
         var partials = PopulatePartials(jsonBytes);
         foreach (var p in partials)
         {
