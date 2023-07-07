@@ -16,11 +16,7 @@ internal class Program
             jsonBytes = File.ReadAllBytes("/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/data.json");
         }
 
-        List<Pair>? pairs;
-        using (TimeBlock("Deserialize Json"))
-        {
-            pairs = JsonParser.Deserialize(jsonBytes);
-        }
+        var pairs = JsonParser.Deserialize(jsonBytes);
 
         var answer = File.ReadAllText("/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/answer.txt");
         var pairCount = pairs.Count;

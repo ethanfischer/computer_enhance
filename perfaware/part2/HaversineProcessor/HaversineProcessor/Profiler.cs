@@ -39,12 +39,14 @@ public static class ProfilerService
     {
         var elapsed = anchor.TSCElapsed - anchor.TSCElapsedChildren;
         var percent = 100.0 * ((float)elapsed / totalTSCElapsed);
-        Console.WriteLine($"{anchor.Label}[{anchor.HitCount}]: {elapsed} ({percent:F2}%)");
+        Console.Write($"{anchor.Label}[{anchor.HitCount}]: {elapsed} ({percent:F2}%");
         if (anchor.TSCElapsedChildren > 0)
         {
             var percentWithChildren = 100.0 * ((float)anchor.TSCElapsed / totalTSCElapsed);
-            Console.WriteLine($"w/children: {percentWithChildren:F2}\n");
+            Console.Write($", {percentWithChildren:F2}% w/children");
         }
+        
+        Console.Write(")\n");
     }
 
     public static void BeginProfile()

@@ -1,4 +1,5 @@
 using System.Reflection;
+using static ProfilerService;
 
 namespace JsonGenerator;
 
@@ -8,12 +9,15 @@ public static class JsonParser
 
     public static List<Pair> Deserialize(byte[] jsonBytes)
     {
-        // using var _ = Profiler.TimeFunction();
-        
+        using var _ = TimeBlock("Deserialize");
         var partials = PopulatePartials(jsonBytes);
-        foreach (var p in partials)
+
+        using (TimeBlock("PopulateMembers"))
         {
-            PopulateMembers(p);
+            foreach (var p in partials)
+            {
+                PopulateMembers(p);
+            }
         }
 
         var result = partials.Select(x => x.Value).ToList();
