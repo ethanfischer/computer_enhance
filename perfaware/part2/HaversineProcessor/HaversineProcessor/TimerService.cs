@@ -5,21 +5,6 @@ namespace JsonGenerator;
 
 public static  class TimerService
 {
-    // public static void Main(string[] args)
-    // {
-    //     Console.WriteLine("How many milliseconds to wait?");
-    //     var input = Console.ReadLine();
-    //     long millisecondsToWait = 1000;
-    //     if (input != string.Empty)
-    //     {
-    //         millisecondsToWait = long.Parse(input);
-    //     }
-    //
-    //     EstimateCpuFrequency(millisecondsToWait);
-    //
-    //     Main(null);
-    // }
-
     public static ulong ReadCPUTimer()
     {
         initialize_mach_timebase_info();

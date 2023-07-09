@@ -17,7 +17,6 @@ internal class Program
         }
 
         var pairs = JsonParser.Deserialize(jsonBytes);
-        pairs = JsonParser.Deserialize(jsonBytes);
 
         var answer = File.ReadAllText("/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/answer.txt");
         var pairCount = pairs.Count;
@@ -45,7 +44,7 @@ internal class Program
         
         Thread.Sleep(3000);
 
-        using (TimeBlock($"Recursive {depth}"))
+        using (TimeBlock($"Recursive"))
         {
             Recursive(depth + 1);
         }
