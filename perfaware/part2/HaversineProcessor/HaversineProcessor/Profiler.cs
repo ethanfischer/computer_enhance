@@ -28,12 +28,9 @@ public static class ProfilerService
 {
     public static Profiler GlobalProfiler = new();
     public static uint ProfilerParent;
-    private static uint _counter = 0;
-
-    public static string NameConcat(string a, string b) => a + b;
+    private static uint _counter;
 
     public static ProfileBlock TimeBlock(string label) => new(label, ++_counter);
-// #define TimeFunction TimeBlock(__func__)
 
     public static void PrintTimeElapsed(ulong totalTSCElapsed, ProfileAnchor anchor)
     {
@@ -45,8 +42,8 @@ public static class ProfilerService
             var percentWithChildren = 100.0 * ((float)anchor.TSCElapsed / totalTSCElapsed);
             Console.Write($", {percentWithChildren:F2}% w/children");
         }
-        
-        Console.Write(")\n");
+
+        Console.Write(")");
     }
 
     public static void BeginProfile()

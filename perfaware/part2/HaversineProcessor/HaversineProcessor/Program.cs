@@ -21,6 +21,8 @@ internal class Program
         var answer = File.ReadAllText("/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/answer.txt");
         var pairCount = pairs.Count;
 
+        Recursive();
+
         var sum = 0d;
         using (TimeBlock("Pair summation"))
         {
@@ -36,15 +38,15 @@ internal class Program
         EndAndPrintProfile();
     }
 
-    // private static double GetSum(List<Pair> pairs)
-    // {
-    //     TimeFunction();
-    //     var sum = 0d;
-    //     foreach (var pair in pairs)
-    //     {
-    //         sum += Haversine.ReferenceHaversine(pair.X0, pair.Y0, pair.X1, pair.Y1);
-    //     }
-    //
-    //     return sum;
-    // }
+    private static void Recursive(int depth = 0)
+    {
+        if (depth > 3) { return; }
+        
+        Thread.Sleep(3000);
+
+        using (TimeBlock($"Recursive {depth}"))
+        {
+            Recursive(depth + 1);
+        }
+    }
 }
