@@ -2,7 +2,7 @@
 
 using System.Text.Json;
 using JsonGenerator;
-using static ProfilerService;
+using static SMXGo.Scripts.Other.SMXProfiler;
 
 internal class Program
 {
@@ -17,6 +17,7 @@ internal class Program
         }
 
         var pairs = JsonParser.Deserialize(jsonBytes);
+        pairs = JsonParser.Deserialize(jsonBytes);
 
         var answer = File.ReadAllText("/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/answer.txt");
         var pairCount = pairs.Count;

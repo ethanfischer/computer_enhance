@@ -1,5 +1,5 @@
 using System.Reflection;
-using static ProfilerService;
+using static SMXGo.Scripts.Other.SMXProfiler;
 
 namespace JsonGenerator;
 
