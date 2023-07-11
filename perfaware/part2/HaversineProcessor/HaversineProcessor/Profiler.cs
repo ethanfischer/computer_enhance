@@ -3,112 +3,118 @@ using static SMXGo.Scripts.Other.SMXProfiler;
 
 namespace SMXGo.Scripts.Other
 {
-	public struct ProfileAnchor
-	{
-		public ulong TSCElapsed;
-		public ulong TSCElapsedChildren;
-		public ulong HitCount;
-		public string Label;
-	}
+    public struct ProfileAnchor
+    {
+        public ulong TSCElapsed;
+        public ulong TSCElapsedChildren;
+        public ulong TSCElapsedAtRoot;
+        public ulong HitCount;
+        public string Label;
+    }
 
-	public record Profiler
-	{
-		public readonly ProfileAnchor[] Anchors = new ProfileAnchor[4096];
-		public ulong StartTSC;
-		public ulong EndTSC;
-	}
+    public record Profiler
+    {
+        public readonly ProfileAnchor[] Anchors = new ProfileAnchor[4096];
+        public ulong StartTSC;
+        public ulong EndTSC;
+    }
 
-	public static class SMXProfiler
-	{
-		public static readonly Profiler GlobalProfiler = new();
-		public static uint ProfilerParent;
-		private static uint _counter;
-		private static readonly Dictionary<string, uint> _labelToIndexMap = new();
 
-		public static ProfileBlock TimeBlock(string label)
-		{
-			if (!_labelToIndexMap.ContainsKey(label))
-			{
-				_labelToIndexMap[label] = ++_counter;
-			}
+    public record ProfileBlock : IDisposable
+    {
+        readonly string _label;
+        readonly ulong _startTsc;
+        readonly ulong _oldTscElapsedAtRoot;
+        readonly uint _parentIndex;
+        readonly uint _anchorIndex;
 
-			return new ProfileBlock(label, _labelToIndexMap[label]);
-		}
+        public ProfileBlock(string label, uint anchorIndex)
+        {
+            _parentIndex = ProfilerParent;
 
-		static void PrintTimeElapsed(ulong totalTSCElapsed, ProfileAnchor anchor)
-		{
-			var elapsed = anchor.TSCElapsed - anchor.TSCElapsedChildren;
-			var percent = 100.0 * ( (float)elapsed / totalTSCElapsed );
-			var logMessage = $"{anchor.Label}[{anchor.HitCount}]: {elapsed} ({percent:F2}%)";
-			if (anchor.TSCElapsedChildren > 0)
-			{
-				var percentWithChildren = 100.0 * ( (float)anchor.TSCElapsed / totalTSCElapsed );
-				logMessage += $" ({percentWithChildren:F2}% w/children)";
-			}
+            _anchorIndex = anchorIndex;
+            _label = label;
+            
+            var anchor = GlobalProfiler.Anchors[_anchorIndex];
+            _oldTscElapsedAtRoot = anchor.TSCElapsedAtRoot;
 
-			Console.WriteLine($"{logMessage}");
-		}
+            ProfilerParent = _anchorIndex;
+            _startTsc = TimerService.ReadCPUTimer();
+        }
 
-		public static void BeginProfile()
-		{
-			GlobalProfiler.StartTSC = TimerService.ReadCPUTimer();
-		}
+        public void Dispose()
+        {
+            var elapsed = TimerService.ReadCPUTimer() - _startTsc;
+            ProfilerParent = _parentIndex;
 
-		public static void EndAndPrintProfile()
-		{
-			GlobalProfiler.EndTSC = TimerService.ReadCPUTimer();
-			var cpuFrequency = TimerService.EstimateCPUTimerFreq();
+            var parent = GlobalProfiler.Anchors[_parentIndex];
+            parent.TSCElapsedChildren += elapsed;
+            GlobalProfiler.Anchors[_parentIndex] = parent;
+            
+            var anchor = GlobalProfiler.Anchors[_anchorIndex];
+            anchor.TSCElapsedAtRoot = _oldTscElapsedAtRoot + elapsed;
+            anchor.TSCElapsed = elapsed;
+            anchor.HitCount++;
+            anchor.Label = _label;
+            GlobalProfiler.Anchors[_anchorIndex] = anchor;
+        }
+    }
 
-			var totalCpuElapsed = GlobalProfiler.EndTSC - GlobalProfiler.StartTSC;
+    public static class SMXProfiler
+    {
+        public static readonly Profiler GlobalProfiler = new();
+        public static uint ProfilerParent;
+        private static uint _counter;
+        private static readonly Dictionary<string, uint> _labelToIndexMap = new();
 
-			if (cpuFrequency > 0)
-			{
-				Console.WriteLine($"Total time: {1000.0 * (float)totalCpuElapsed / cpuFrequency:F4}ms (CPU freq {cpuFrequency})\n");
-			}
+        public static ProfileBlock TimeBlock(string label)
+        {
+            if (!_labelToIndexMap.ContainsKey(label))
+            {
+                _labelToIndexMap[label] = ++_counter;
+            }
 
-			foreach (var anchor in GlobalProfiler.Anchors)
-			{
-				if (anchor.TSCElapsed != 0)
-				{
-					PrintTimeElapsed(totalCpuElapsed, anchor);
-				}
-			}
-		}
-	}
+            return new ProfileBlock(label, _labelToIndexMap[label]);
+        }
 
-	public record ProfileBlock : IDisposable
-	{
-		readonly string _label;
-		readonly ulong _startTsc;
-		readonly uint _parentIndex;
-		readonly uint _anchorIndex;
+        static void PrintTimeElapsed(ulong totalTSCElapsed, ProfileAnchor anchor)
+        {
+            var elapsed = anchor.TSCElapsed - anchor.TSCElapsedChildren;
+            var percent = 100.0 * ((float)elapsed / totalTSCElapsed);
+            var logMessage = $"{anchor.Label}[{anchor.HitCount}]: {elapsed} ({percent:F2}%)";
+            if (anchor.TSCElapsedChildren > 0)
+            {
+                var percentWithChildren = 100.0 * ((float)anchor.TSCElapsed / totalTSCElapsed);
+                logMessage += $" ({percentWithChildren:F2}% w/children)";
+            }
 
-		public ProfileBlock(string label, uint anchorIndex)
-		{
-			_parentIndex = ProfilerParent;
+            Console.WriteLine($"{logMessage}");
+        }
 
-			_anchorIndex = anchorIndex;
-			_label = label;
+        public static void BeginProfile()
+        {
+            GlobalProfiler.StartTSC = TimerService.ReadCPUTimer();
+        }
 
-			ProfilerParent = _anchorIndex;
-			_startTsc = TimerService.ReadCPUTimer();
-		}
+        public static void EndAndPrintProfile()
+        {
+            GlobalProfiler.EndTSC = TimerService.ReadCPUTimer();
+            var cpuFrequency = TimerService.EstimateCPUTimerFreq();
 
-		public void Dispose()
-		{
-			var elapsed = TimerService.ReadCPUTimer() - _startTsc;
-			ProfilerParent = _parentIndex;
+            var totalCpuElapsed = GlobalProfiler.EndTSC - GlobalProfiler.StartTSC;
 
-			var parent = GlobalProfiler.Anchors[_parentIndex];
-			var anchor = GlobalProfiler.Anchors[_anchorIndex];
+            if (cpuFrequency > 0)
+            {
+                Console.WriteLine($"Total time: {1000.0 * (float)totalCpuElapsed / cpuFrequency:F4}ms (CPU freq {cpuFrequency})\n");
+            }
 
-			parent.TSCElapsedChildren += elapsed;
-			anchor.TSCElapsed += elapsed;
-			anchor.HitCount++;
-			anchor.Label = _label;
-
-			GlobalProfiler.Anchors[_parentIndex] = parent;
-			GlobalProfiler.Anchors[_anchorIndex] = anchor;
-		}
-	};
+            foreach (var anchor in GlobalProfiler.Anchors)
+            {
+                if (anchor.TSCElapsed != 0)
+                {
+                    PrintTimeElapsed(totalCpuElapsed, anchor);
+                }
+            }
+        }
+    }
 }

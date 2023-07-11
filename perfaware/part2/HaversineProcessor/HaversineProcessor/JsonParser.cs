@@ -9,16 +9,16 @@ public static class JsonParser
 
     public static List<Pair> Deserialize(byte[] jsonBytes)
     {
-        using var _ = TimeBlock("Deserialize");
+        // using var _ = TimeBlock("Deserialize");
         var partials = PopulatePartials(jsonBytes);
 
-        using (TimeBlock("PopulateMembers"))
-        {
+        // using (TimeBlock("PopulateMembers"))
+        // {
             foreach (var p in partials)
             {
                 PopulateMembers(p);
             }
-        }
+        // }
 
         var result = partials.Select(x => x.Value).ToList();
         return result;
