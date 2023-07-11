@@ -11,10 +11,10 @@ internal class Program
         BeginProfile();
 
         byte[] jsonBytes;
-        // using (TimeBlock("Read Json from Disk"))
-        // {
+        using (TimeBlock("Read Json from Disk"))
+        {
             jsonBytes = File.ReadAllBytes("/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/data.json");
-        // }
+        }
 
         var pairs = JsonParser.Deserialize(jsonBytes);
 
@@ -24,13 +24,13 @@ internal class Program
         Recursive();
 
         var sum = 0d;
-        // using (TimeBlock("Pair summation"))
-        // {
+        using (TimeBlock("Pair summation"))
+        {
             foreach (var pair in pairs)
             {
                 sum += Haversine.ReferenceHaversine(pair.X0, pair.Y0, pair.X1, pair.Y1);
             }
-        // }
+        }
 
         Console.WriteLine($"Pair count: {pairCount}");
         Console.WriteLine($"Haversine sum: {sum / pairCount}");

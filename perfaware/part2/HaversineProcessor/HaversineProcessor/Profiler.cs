@@ -86,7 +86,7 @@ namespace SMXGo.Scripts.Other
                 logMessage += $" ({percentWithChildren:F2}% w/children)";
             }
 
-            Console.WriteLine($"{logMessage}");
+            Log($"{logMessage}");
         }
 
         public static void BeginProfile()
@@ -103,7 +103,7 @@ namespace SMXGo.Scripts.Other
 
             if (cpuFrequency > 0)
             {
-                Console.WriteLine($"Total time: {1000.0 * (float)totalCpuElapsed / cpuFrequency:F4}ms (CPU freq {cpuFrequency})\n");
+                Log($"Total time: {1000.0 * (float)totalCpuElapsed / cpuFrequency:F4}ms (CPU freq {cpuFrequency})\n");
             }
 
             foreach (var anchor in GlobalProfiler.Anchors)
@@ -113,6 +113,11 @@ namespace SMXGo.Scripts.Other
                     PrintTimeElapsed(totalCpuElapsed, anchor);
                 }
             }
+        }
+
+        private static void Log(string message)
+        {
+            Console.WriteLine(message);
         }
     }
 }
