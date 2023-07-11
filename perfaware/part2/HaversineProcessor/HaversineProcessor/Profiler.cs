@@ -5,9 +5,8 @@ namespace SMXGo.Scripts.Other
 {
     public struct ProfileAnchor
     {
-        public ulong TSCElapsed;
-        public ulong TSCElapsedChildren;
-        public ulong TSCElapsedAtRoot;
+        public ulong TSCElapsedInclusive; //Time including children
+        public ulong TCSElapsedExclusive;
         public ulong HitCount;
         public string Label;
     }
@@ -24,7 +23,7 @@ namespace SMXGo.Scripts.Other
     {
         readonly string _label;
         readonly ulong _startTsc;
-        readonly ulong _oldTscElapsedAtRoot;
+        readonly ulong _oldTscElapsedInclusive;
         readonly uint _parentIndex;
         readonly uint _anchorIndex;
 
@@ -36,7 +35,7 @@ namespace SMXGo.Scripts.Other
             _label = label;
             
             var anchor = GlobalProfiler.Anchors[_anchorIndex];
-            _oldTscElapsedAtRoot = anchor.TSCElapsedAtRoot;
+            _oldTscElapsedInclusive = anchor.TSCElapsedInclusive;
 
             ProfilerParent = _anchorIndex;
             _startTsc = TimerService.ReadCPUTimer();
@@ -47,16 +46,16 @@ namespace SMXGo.Scripts.Other
             var elapsed = TimerService.ReadCPUTimer() - _startTsc;
             ProfilerParent = _parentIndex;
 
-            var parent = GlobalProfiler.Anchors[_parentIndex];
-            parent.TSCElapsedChildren += elapsed;
-            GlobalProfiler.Anchors[_parentIndex] = parent;
-            
             var anchor = GlobalProfiler.Anchors[_anchorIndex];
-            anchor.TSCElapsedAtRoot = _oldTscElapsedAtRoot + elapsed;
-            anchor.TSCElapsed = elapsed;
+            anchor.TCSElapsedExclusive += elapsed;
+            anchor.TSCElapsedInclusive = _oldTscElapsedInclusive + elapsed;
             anchor.HitCount++;
             anchor.Label = _label;
             GlobalProfiler.Anchors[_anchorIndex] = anchor;
+            
+            var parent = GlobalProfiler.Anchors[_parentIndex];
+            parent.TCSElapsedExclusive -= elapsed;
+            GlobalProfiler.Anchors[_parentIndex] = parent;
         }
     }
 
@@ -79,12 +78,11 @@ namespace SMXGo.Scripts.Other
 
         static void PrintTimeElapsed(ulong totalTSCElapsed, ProfileAnchor anchor)
         {
-            var elapsed = anchor.TSCElapsed - anchor.TSCElapsedChildren;
-            var percent = 100.0 * ((float)elapsed / totalTSCElapsed);
-            var logMessage = $"{anchor.Label}[{anchor.HitCount}]: {elapsed} ({percent:F2}%)";
-            if (anchor.TSCElapsedChildren > 0)
+            var percent = 100.0 * ((float)anchor.TCSElapsedExclusive / totalTSCElapsed);
+            var logMessage = $"{anchor.Label}[{anchor.HitCount}]: {anchor.TCSElapsedExclusive} ({percent:F2}%)";
+            if (anchor.TCSElapsedExclusive != anchor.TSCElapsedInclusive)
             {
-                var percentWithChildren = 100.0 * ((float)anchor.TSCElapsed / totalTSCElapsed);
+                var percentWithChildren = 100.0 * ((float)anchor.TSCElapsedInclusive / totalTSCElapsed);
                 logMessage += $" ({percentWithChildren:F2}% w/children)";
             }
 
@@ -110,7 +108,7 @@ namespace SMXGo.Scripts.Other
 
             foreach (var anchor in GlobalProfiler.Anchors)
             {
-                if (anchor.TSCElapsed != 0)
+                if (anchor.TSCElapsedInclusive != 0)
                 {
                     PrintTimeElapsed(totalCpuElapsed, anchor);
                 }
