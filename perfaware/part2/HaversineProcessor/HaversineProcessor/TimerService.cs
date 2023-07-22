@@ -33,7 +33,7 @@ public static  class TimerService
     [DllImport("libtimer.dylib", CallingConvention = CallingConvention.Cdecl)]
     public static extern ulong get_time_in_ns();
 
-    public static ulong EstimateCPUTimerFreq(ulong millisecondsToWait = 1000)
+    public static ulong EstimateCPUTimerFreq(ulong millisecondsToWait = 10)
     {
         var osFreq = (ulong)Stopwatch.Frequency;
 

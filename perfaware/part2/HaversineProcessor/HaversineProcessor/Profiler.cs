@@ -1,3 +1,5 @@
+// #define PROFILING
+
 using JsonGenerator;
 using static SMXGo.Scripts.Other.SMXProfiler;
 
@@ -27,13 +29,14 @@ namespace SMXGo.Scripts.Other
         readonly uint _parentIndex;
         readonly uint _anchorIndex;
 
+#if PROFILING
         public ProfileBlock(string label, uint anchorIndex)
         {
             _parentIndex = ProfilerParent;
 
             _anchorIndex = anchorIndex;
             _label = label;
-            
+
             var anchor = GlobalProfiler.Anchors[_anchorIndex];
             _oldTscElapsedInclusive = anchor.TSCElapsedInclusive;
 
@@ -52,11 +55,20 @@ namespace SMXGo.Scripts.Other
             anchor.HitCount++;
             anchor.Label = _label;
             GlobalProfiler.Anchors[_anchorIndex] = anchor;
-            
+
             var parent = GlobalProfiler.Anchors[_parentIndex];
             parent.TCSElapsedExclusive -= elapsed;
             GlobalProfiler.Anchors[_parentIndex] = parent;
         }
+#else
+        public ProfileBlock(string label, uint anchorIndex)
+        {
+        }
+        
+        public void Dispose()
+        {
+        }
+#endif
     }
 
     public static class SMXProfiler
@@ -66,6 +78,7 @@ namespace SMXGo.Scripts.Other
         private static uint _counter;
         private static readonly Dictionary<string, uint> _labelToIndexMap = new();
 
+#if PROFILING
         public static ProfileBlock TimeBlock(string label)
         {
             if (!_labelToIndexMap.ContainsKey(label))
@@ -75,6 +88,14 @@ namespace SMXGo.Scripts.Other
 
             return new ProfileBlock(label, _labelToIndexMap[label]);
         }
+#else
+        private static readonly ProfileBlock _dummyBlock = new("", 0);
+        public static ProfileBlock TimeBlock(string label)
+        {
+            return _dummyBlock;
+        }
+#endif
+
 
         static void PrintTimeElapsed(ulong totalTSCElapsed, ProfileAnchor anchor)
         {

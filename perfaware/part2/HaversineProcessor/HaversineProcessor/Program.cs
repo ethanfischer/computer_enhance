@@ -2,6 +2,7 @@
 
 using System.Text.Json;
 using JsonGenerator;
+using SMXGo.Scripts.Other;
 using static SMXGo.Scripts.Other.SMXProfiler;
 
 internal class Program
@@ -18,10 +19,15 @@ internal class Program
 
         var pairs = JsonParser.Deserialize(jsonBytes);
 
+        for (var i = 0; i < 1000000; i++)
+        {
+            using var _ = SMXProfiler.TimeBlock("yeah");
+        }
+
         var answer = File.ReadAllText("/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/answer.txt");
         var pairCount = pairs.Count;
 
-        Recursive();
+        // Recursive();
 
         var sum = 0d;
         using (TimeBlock("Pair summation"))
