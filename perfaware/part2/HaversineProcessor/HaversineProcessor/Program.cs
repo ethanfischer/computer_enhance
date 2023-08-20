@@ -25,16 +25,11 @@ internal class Program
         Recursive();
 
         var sum = 0d;
-        unsafe
+        using (TimeBlock("Pair summation"))
         {
-            var a = sizeof(Pair);
-            Console.WriteLine($"sizeof pair:{a}");
-            using (TimeBlock("Pair summation", pairs.Count * a))
+            foreach (var pair in pairs)
             {
-                foreach (var pair in pairs)
-                {
-                    sum += Haversine.ReferenceHaversine(pair.X0, pair.Y0, pair.X1, pair.Y1);
-                }
+                sum += Haversine.ReferenceHaversine(pair.X0, pair.Y0, pair.X1, pair.Y1);
             }
         }
 

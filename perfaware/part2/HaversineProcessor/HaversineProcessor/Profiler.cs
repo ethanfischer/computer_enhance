@@ -90,15 +90,15 @@ public static class SMXProfiler
 
         if (anchor.ProcessedByteCount > 0)
         {
-            var megabyte = 1024.0f * 1024.0f;
-            var gigabyte = megabyte * 1024.0f;
+            var mebibyte = 1024.0f * 1024.0f;
+            var gibibyte = mebibyte * 1024.0f;
 
             var seconds = anchor.TSCElapsedInclusive / (double)cpuFrequency;
             var bytesPerSecond = (ulong)anchor.ProcessedByteCount / seconds;
-            var megabytes = (ulong)anchor.ProcessedByteCount / (ulong)megabyte;
-            var gigabytesPerSecond = bytesPerSecond / gigabyte;
+            var mebibytes = (ulong)anchor.ProcessedByteCount / (ulong)mebibyte;
+            var gibibytesPerSecond = bytesPerSecond / gibibyte;
 
-            logMessage += $"  %{megabytes:F2}mb at %{gigabytesPerSecond:F2}gb/s";
+            logMessage += $"  %{mebibytes:F2}MiB at %{gibibytesPerSecond:F2}GiB/s";
         }
 
         Log($"{logMessage}");
