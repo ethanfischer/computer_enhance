@@ -1,6 +1,6 @@
 namespace JsonGenerator;
 
-public class Pair
+public struct Pair
 {
     public double X0 { get; set; }
     public double X1 { get; set; }

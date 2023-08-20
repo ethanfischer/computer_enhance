@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using JsonGenerator;
 using static SMXGo.Scripts.Other.SMXProfiler;
@@ -24,11 +25,16 @@ internal class Program
         Recursive();
 
         var sum = 0d;
-        using (TimeBlock("Pair summation"))
+        unsafe
         {
-            foreach (var pair in pairs)
+            var a = sizeof(Pair);
+            Console.WriteLine($"sizeof pair:{a}");
+            using (TimeBlock("Pair summation", pairs.Count * a))
             {
-                sum += Haversine.ReferenceHaversine(pair.X0, pair.Y0, pair.X1, pair.Y1);
+                foreach (var pair in pairs)
+                {
+                    sum += Haversine.ReferenceHaversine(pair.X0, pair.Y0, pair.X1, pair.Y1);
+                }
             }
         }
 
@@ -41,7 +47,7 @@ internal class Program
     private static void Recursive(int depth = 0)
     {
         using var _ = TimeBlock("Recursive");
-        
+
         if (depth > 10)
         {
             return;
