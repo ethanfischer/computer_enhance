@@ -14,6 +14,8 @@ public static class RepititionTester
             Console.WriteLine($"Report {i+1}");
             Console.WriteLine($"-----------------------------------");
             LogReport(report);
+            Console.WriteLine($"-----------------------------------");
+            Console.WriteLine($"");
         }
 
     }

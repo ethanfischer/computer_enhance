@@ -9,7 +9,7 @@ public static class JsonParser
 
     public static List<Pair> Deserialize(byte[] jsonBytes)
     {
-        Console.WriteLine($"jsonBytes.Length: {jsonBytes.Length}");
+        // Console.WriteLine($"jsonBytes.Length: {jsonBytes.Length}");
         using var _ = TimeBlock("Deserialize", jsonBytes.Length);
         var partials = PopulatePartials(jsonBytes);
 
