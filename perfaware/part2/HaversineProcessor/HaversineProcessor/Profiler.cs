@@ -61,6 +61,12 @@ public record ProfileBlock : IDisposable
         GlobalProfiler.Anchors[_parentIndex] = parent;
     }
 }
+public class ProfilerReport
+{
+    public ulong TotalCpuElapsed { get; set; }
+    public ulong CpuFrequency { get; set; }
+    public ProfileAnchor[] Anchors { get; set; }
+}
 public static class SMXProfiler
 {
     public static readonly Profiler GlobalProfiler = new();
@@ -109,25 +115,31 @@ public static class SMXProfiler
         GlobalProfiler.StartTSC = TimerService.ReadCPUTimer();
     }
 
-    public static void EndAndPrintProfile()
+    public static ProfilerReport EndAndPrintProfile()
     {
         GlobalProfiler.EndTSC = TimerService.ReadCPUTimer();
-        var cpuFrequency = TimerService.EstimateCPUTimerFreq();
 
-        var totalCpuElapsed = GlobalProfiler.EndTSC - GlobalProfiler.StartTSC;
-
-        if (cpuFrequency > 0)
+        var result = new ProfilerReport
         {
-            Log($"Total time: {1000.0 * (float)totalCpuElapsed / cpuFrequency:F4}ms (CPU freq {cpuFrequency})\n");
+            CpuFrequency = TimerService.EstimateCPUTimerFreq(),
+            TotalCpuElapsed = GlobalProfiler.EndTSC - GlobalProfiler.StartTSC
+        };
+
+        if (result.CpuFrequency > 0)
+        {
+            Log($"Total time: {1000.0 * (float)result.TotalCpuElapsed / result.CpuFrequency:F4}ms (CPU freq {result.CpuFrequency})\n");
         }
 
         foreach (var anchor in GlobalProfiler.Anchors)
         {
             if (anchor.TSCElapsedInclusive != 0)
             {
-                PrintTimeElapsed(totalCpuElapsed, anchor, cpuFrequency);
+                PrintTimeElapsed(result.TotalCpuElapsed, anchor, result.CpuFrequency);
             }
         }
+
+        result.Anchors = GlobalProfiler.Anchors;
+        return result;
     }
 
     private static void Log(string message)

@@ -2,12 +2,19 @@
 
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using HaversineProcessor;
 using JsonGenerator;
+using SMXGo.Scripts.Other;
 using static SMXGo.Scripts.Other.SMXProfiler;
 
 internal class Program
 {
     public static void Main(string[] args)
+    {
+        RepititionTester.Test(RunHaversine);
+    }
+    
+    static ProfilerReport RunHaversine()
     {
         BeginProfile();
 
@@ -22,8 +29,6 @@ internal class Program
         var answer = File.ReadAllText("/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/answer.txt");
         var pairCount = pairs.Count;
 
-        Recursive();
-
         var sum = 0d;
         using (TimeBlock("Pair summation"))
         {
@@ -36,7 +41,7 @@ internal class Program
         Console.WriteLine($"Pair count: {pairCount}");
         Console.WriteLine($"Haversine sum: {sum / pairCount}");
         Console.WriteLine("");
-        EndAndPrintProfile();
+        return EndAndPrintProfile();
     }
 
     private static void Recursive(int depth = 0)
