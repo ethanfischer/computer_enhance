@@ -6,7 +6,7 @@ public static class RepititionTester
 {
     public static void Test(Func<ProfilerReport> test)
     {
-        const int reportsCount = 1;
+        const int reportsCount = 10;
         var reports = new ProfilerReport[reportsCount];
         var avgTotalCpuElapsed = 0.0;
         var maxTotalCpuElapsed = 0.0;
@@ -18,13 +18,17 @@ public static class RepititionTester
             Console.WriteLine($"-----------------------------------");
             LogReport(reports[i]);
             Console.WriteLine($"");
-            avgTotalCpuElapsed = reports.Select(x => x.TotalCpuElapsed).Average(Convert.ToDouble);
-            maxTotalCpuElapsed = reports.Select(x => x.TotalCpuElapsed).Max(Convert.ToDouble);
+            var reportsSoFar = reports[..(i+1)];
+            avgTotalCpuElapsed  = reportsSoFar
+                .Select(x => x.TotalCpuElapsed)
+                .Average(Convert.ToDouble);
+            maxTotalCpuElapsed = reportsSoFar
+                .Select(x => x.TotalCpuElapsed)
+                .Max(Convert.ToDouble);
             Console.WriteLine($"Average: {avgTotalCpuElapsed}");
             Console.WriteLine($"Max: {maxTotalCpuElapsed}");
             Console.WriteLine($"-----------------------------------");
             Console.WriteLine($"");
-            avgTotalCpuElapsed = reports.Select(x => x.TotalCpuElapsed).Average(Convert.ToDouble);
             Console.WriteLine($"");
             Console.WriteLine($"");
         }
@@ -32,11 +36,11 @@ public static class RepititionTester
 
     static void LogReport(ProfilerReport report)
     {
-        Console.WriteLine($"CpuFrequency: {report.CpuFrequency}");
+        // Console.WriteLine($"CpuFrequency: {report.CpuFrequency}");
         Console.WriteLine($"TotalCpuElapsed: {report.TotalCpuElapsed}");
-        Console.WriteLine($"ProfileAnchors: {GetSerializedAnchors(report)}");
-        Console.WriteLine($"PairCount: {report.PairCount}");
-        Console.WriteLine($"HaversineSum: {report.HaversineSum}");
+        // Console.WriteLine($"ProfileAnchors: {GetSerializedAnchors(report)}");
+        // Console.WriteLine($"PairCount: {report.PairCount}");
+        // Console.WriteLine($"HaversineSum: {report.HaversineSum}");
     }
 
     static string GetSerializedAnchors(ProfilerReport report)
