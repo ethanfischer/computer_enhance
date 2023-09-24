@@ -66,6 +66,8 @@ public class ProfilerReport
     public ulong TotalCpuElapsed { get; set; }
     public ulong CpuFrequency { get; set; }
     public ProfileAnchor[] Anchors { get; set; }
+    public int PairCount { get; set; }
+    public double HaversineSum { get; set; }
 }
 public static class SMXProfiler
 {

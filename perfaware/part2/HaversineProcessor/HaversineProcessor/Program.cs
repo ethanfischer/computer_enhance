@@ -38,10 +38,17 @@ internal class Program
             }
         }
 
-        Console.WriteLine($"Pair count: {pairCount}");
-        Console.WriteLine($"Haversine sum: {sum / pairCount}");
-        Console.WriteLine("");
-        return EndAndPrintProfile();
+        var additionalResult = new ProfilerReport
+        {
+            PairCount = pairCount,
+            HaversineSum = sum / pairCount
+        };
+        var result = EndAndPrintProfile();
+        result.PairCount = additionalResult.PairCount;
+        result.HaversineSum = additionalResult.HaversineSum;
+        // Console.WriteLine($"{result.PairCount}");
+        // Console.WriteLine($"{result.HaversineSum}");
+        return result;
     }
 
     private static void Recursive(int depth = 0)

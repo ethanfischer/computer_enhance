@@ -18,11 +18,13 @@ public static class RepititionTester
 
     }
 
-    private static void LogReport(ProfilerReport report)
+    static void LogReport(ProfilerReport report)
     {
         Console.WriteLine($"CpuFrequency: {report.CpuFrequency}");
         Console.WriteLine($"TotalCpuElapsed: {report.TotalCpuElapsed}");
         Console.WriteLine($"ProfileAnchors: {GetSerializedAnchors(report)}");
+        Console.WriteLine($"PairCount: {report.PairCount}");
+        Console.WriteLine($"HaversineSum: {report.HaversineSum}");
     }
     
     static string GetSerializedAnchors(ProfilerReport report)
