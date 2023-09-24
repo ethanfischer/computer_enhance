@@ -1,6 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using System.Runtime.InteropServices;
 using System.Text.Json;
 using HaversineProcessor;
 using JsonGenerator;
@@ -54,7 +53,7 @@ internal class Program
     private static void Recursive(int depth = 0)
     {
         using var _ = TimeBlock("Recursive");
-
+        
         if (depth > 10)
         {
             return;

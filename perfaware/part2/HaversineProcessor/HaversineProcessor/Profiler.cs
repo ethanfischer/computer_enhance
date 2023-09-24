@@ -12,14 +12,16 @@ public struct ProfileAnchor
     public ulong TCSElapsedExclusive;
     public ulong HitCount;
     public string Label;
-    public int ProcessedByteCount;
 }
+
 public record Profiler
 {
     public readonly ProfileAnchor[] Anchors = new ProfileAnchor[4096];
     public ulong StartTSC;
     public ulong EndTSC;
 }
+
+
 public record ProfileBlock : IDisposable
 {
     readonly string _label;
@@ -28,17 +30,15 @@ public record ProfileBlock : IDisposable
     readonly uint _parentIndex;
     readonly uint _anchorIndex;
 
-    public ProfileBlock(string label, uint anchorIndex, int byteCount)
+    public ProfileBlock(string label, uint anchorIndex)
     {
         _parentIndex = ProfilerParent;
 
         _anchorIndex = anchorIndex;
         _label = label;
-
+            
         var anchor = GlobalProfiler.Anchors[_anchorIndex];
         _oldTscElapsedInclusive = anchor.TSCElapsedInclusive;
-        anchor.ProcessedByteCount += byteCount;
-        GlobalProfiler.Anchors[_anchorIndex] = anchor;
 
         ProfilerParent = _anchorIndex;
         _startTsc = TimerService.ReadCPUTimer();
@@ -55,7 +55,7 @@ public record ProfileBlock : IDisposable
         anchor.HitCount++;
         anchor.Label = _label;
         GlobalProfiler.Anchors[_anchorIndex] = anchor;
-
+            
         var parent = GlobalProfiler.Anchors[_parentIndex];
         parent.TCSElapsedExclusive -= elapsed;
         GlobalProfiler.Anchors[_parentIndex] = parent;
@@ -76,17 +76,17 @@ public static class SMXProfiler
     private static uint _counter;
     private static readonly Dictionary<string, uint> _labelToIndexMap = new();
 
-    public static ProfileBlock TimeBlock(string label, int byteCount = 0)
+    public static ProfileBlock TimeBlock(string label)
     {
         if (!_labelToIndexMap.ContainsKey(label))
         {
             _labelToIndexMap[label] = ++_counter;
         }
 
-        return new ProfileBlock(label, _labelToIndexMap[label], byteCount);
+        return new ProfileBlock(label, _labelToIndexMap[label]);
     }
 
-    static void PrintTimeElapsed(ulong totalTSCElapsed, ProfileAnchor anchor, float cpuFrequency)
+    static void PrintTimeElapsed(ulong totalTSCElapsed, ProfileAnchor anchor)
     {
         var percent = 100.0 * ((float)anchor.TCSElapsedExclusive / totalTSCElapsed);
         var logMessage = $"{anchor.Label}[{anchor.HitCount}]: {anchor.TCSElapsedExclusive} ({percent:F2}%)";
@@ -94,19 +94,6 @@ public static class SMXProfiler
         {
             var percentWithChildren = 100.0 * ((float)anchor.TSCElapsedInclusive / totalTSCElapsed);
             logMessage += $" ({percentWithChildren:F2}% w/children)";
-        }
-
-        if (anchor.ProcessedByteCount > 0)
-        {
-            var mebibyte = 1024.0f * 1024.0f;
-            var gibibyte = mebibyte * 1024.0f;
-
-            var seconds = anchor.TSCElapsedInclusive / (double)cpuFrequency;
-            var bytesPerSecond = (ulong)anchor.ProcessedByteCount / seconds;
-            var mebibytes = (ulong)anchor.ProcessedByteCount / (ulong)mebibyte;
-            var gibibytesPerSecond = bytesPerSecond / gibibyte;
-
-            logMessage += $"  %{mebibytes:F2}MiB at %{gibibytesPerSecond:F2}GiB/s";
         }
 
         Log($"{logMessage}");
@@ -136,7 +123,7 @@ public static class SMXProfiler
         {
             if (anchor.TSCElapsedInclusive != 0)
             {
-                PrintTimeElapsed(result.TotalCpuElapsed, anchor, result.CpuFrequency);
+                PrintTimeElapsed(result.TotalCpuElapsed, anchor);
             }
         }
 
