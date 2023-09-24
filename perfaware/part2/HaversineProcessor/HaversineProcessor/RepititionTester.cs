@@ -11,7 +11,7 @@ public static class RepititionTester
         for (var i = 0; i < 10; i++)
         {
             ProfilerReport report = test.Invoke();
-            Console.WriteLine($"Report {i}");
+            Console.WriteLine($"Report {i+1}");
             Console.WriteLine($"-----------------------------------");
             LogReport(report);
         }
