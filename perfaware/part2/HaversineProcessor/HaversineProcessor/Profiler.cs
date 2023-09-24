@@ -144,7 +144,7 @@ public static class SMXProfiler
 
     private static void Log(string message)
     {
-        Console.WriteLine(message);
+        //Console.WriteLine(message); //TODO: just disabling log for now since I just want repition testers logs
     }
 }
 #else
