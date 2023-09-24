@@ -10,7 +10,7 @@ public static class RepititionTester
 
         for (var i = 0; i < 10; i++)
         {
-            ProfilerReport report = test.Invoke();
+            var report = test.Invoke();
             Console.WriteLine($"Report {i+1}");
             Console.WriteLine($"-----------------------------------");
             LogReport(report);
@@ -20,9 +20,15 @@ public static class RepititionTester
 
     private static void LogReport(ProfilerReport report)
     {
-        Console.WriteLine($"{report.CpuFrequency}");
-        Console.WriteLine($"{report.TotalCpuElapsed}");
+        Console.WriteLine($"CpuFrequency: {report.CpuFrequency}");
+        Console.WriteLine($"TotalCpuElapsed: {report.TotalCpuElapsed}");
+        Console.WriteLine($"ProfileAnchors: {GetSerializedAnchors(report)}");
+    }
+    
+    static string GetSerializedAnchors(ProfilerReport report)
+    {
         var profileAnchors = report.Anchors.Where(x => x.HitCount > 0);
-        Console.WriteLine($"{JsonConvert.SerializeObject(profileAnchors)}");
+        var serializedAnchors = JsonConvert.SerializeObject(profileAnchors);
+        return serializedAnchors;
     }
 }
