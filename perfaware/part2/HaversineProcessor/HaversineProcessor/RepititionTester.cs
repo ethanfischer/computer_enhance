@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices.JavaScript;
 using Newtonsoft.Json;
 using SMXGo.Scripts.Other;
 namespace HaversineProcessor;
@@ -6,32 +7,25 @@ public static class RepititionTester
 {
     public static void Test(Func<ProfilerReport> test)
     {
-        const int reportsCount = 10;
-        var reports = new ProfilerReport[reportsCount];
-        var avgTotalCpuElapsed = 0.0;
-        var maxTotalCpuElapsed = 0.0;
+        var minTotalCpuElapsed = ulong.MaxValue;
+        var lastNewMinTime = DateTime.UtcNow;
+        var maxWaitingTime = TimeSpan.FromMilliseconds(10_000);
+        var timeSinceLastNewMin = new TimeSpan();
 
-        for (var i = 0; i < reportsCount; i++)
+        while (timeSinceLastNewMin < maxWaitingTime)
         {
-            reports[i] = test.Invoke();
-            Console.WriteLine($"Report {i + 1}");
-            Console.WriteLine($"-----------------------------------");
-            LogReport(reports[i]);
-            Console.WriteLine($"");
-            var reportsSoFar = reports[..(i+1)];
-            avgTotalCpuElapsed  = reportsSoFar
-                .Select(x => x.TotalCpuElapsed)
-                .Average(Convert.ToDouble);
-            maxTotalCpuElapsed = reportsSoFar
-                .Select(x => x.TotalCpuElapsed)
-                .Max(Convert.ToDouble);
-            Console.WriteLine($"Average: {avgTotalCpuElapsed}");
-            Console.WriteLine($"Max: {maxTotalCpuElapsed}");
-            Console.WriteLine($"-----------------------------------");
-            Console.WriteLine($"");
-            Console.WriteLine($"");
-            Console.WriteLine($"");
+            var report = test.Invoke();
+            if(report.TotalCpuElapsed < minTotalCpuElapsed)
+            {
+                minTotalCpuElapsed = report.TotalCpuElapsed;
+                Console.WriteLine($"New Min {minTotalCpuElapsed}");
+                lastNewMinTime = DateTime.UtcNow;
+            }
+            
+            timeSinceLastNewMin += DateTime.UtcNow - lastNewMinTime;
         }
+        
+        Console.WriteLine($"Min {minTotalCpuElapsed}");
     }
 
     static void LogReport(ProfilerReport report)

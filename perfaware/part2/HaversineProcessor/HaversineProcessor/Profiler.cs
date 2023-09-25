@@ -104,7 +104,7 @@ public static class SMXProfiler
         GlobalProfiler.StartTSC = TimerService.ReadCPUTimer();
     }
 
-    public static ProfilerReport EndAndPrintProfile()
+    public static ProfilerReport EndAndGetReport()
     {
         GlobalProfiler.EndTSC = TimerService.ReadCPUTimer();
 
