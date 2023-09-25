@@ -9,8 +9,9 @@ public static class RepititionTester
     {
         var minTotalCpuElapsed = ulong.MaxValue;
         var lastNewMinTime = DateTime.UtcNow;
-        var maxWaitingTime = TimeSpan.FromMilliseconds(10_000);
+        var maxWaitingTime = TimeSpan.FromMinutes(30);
         var timeSinceLastNewMin = new TimeSpan();
+        var previousTime = DateTime.UtcNow;
 
         while (timeSinceLastNewMin < maxWaitingTime)
         {
@@ -18,11 +19,16 @@ public static class RepititionTester
             if(report.TotalCpuElapsed < minTotalCpuElapsed)
             {
                 minTotalCpuElapsed = report.TotalCpuElapsed;
-                Console.WriteLine($"New Min {minTotalCpuElapsed}");
+                var gb = 1024f * 1024f * 1024f;
+                var seconds = (double)report.TotalCpuElapsed / report.CpuFrequency;
+                var bestBandwidth = report.BytesProcessed / (gb * seconds);
+                Console.WriteLine($"Min {minTotalCpuElapsed} ({seconds*1000:F2}ms) {bestBandwidth:F2}gb/s");
                 lastNewMinTime = DateTime.UtcNow;
+                timeSinceLastNewMin = TimeSpan.Zero;
             }
-            
-            timeSinceLastNewMin += DateTime.UtcNow - lastNewMinTime;
+
+            timeSinceLastNewMin += DateTime.UtcNow - previousTime;
+            previousTime = DateTime.UtcNow;
         }
         
         Console.WriteLine($"Min {minTotalCpuElapsed}");

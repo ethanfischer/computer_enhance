@@ -22,7 +22,7 @@ internal class Program
             {
                 BeginProfile();
                 jsonBytes = File.ReadAllBytes("/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/data.json");
-                return EndAndGetReport();
+                return EndAndGetReport(jsonBytes.Length);
             });
 
         }
