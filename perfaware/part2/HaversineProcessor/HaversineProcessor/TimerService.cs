@@ -22,9 +22,10 @@ public static  class TimerService
 
     public static ulong ReadCPUTimer()
     {
-        initialize_mach_timebase_info();
-        var result = get_time_in_ns();
-        return result;
+        return (ulong)Stopwatch.GetTimestamp();
+        // initialize_mach_timebase_info();
+        // var result = get_time_in_ns();
+        // return result;
     }
 
     [DllImport("libtimer.dylib", CallingConvention = CallingConvention.Cdecl)]

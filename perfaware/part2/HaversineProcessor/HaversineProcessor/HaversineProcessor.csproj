@@ -7,15 +7,7 @@
         <Nullable>enable</Nullable>
         <LangVersion>10</LangVersion>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-        <PlatformTarget>ARM64</PlatformTarget>
-    </PropertyGroup>
     <ItemGroup>
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
-
-    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <Exec Command="cp &quot;/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/mach_absolute_time/libtimer.dylib&quot; &quot;$(TargetDir)&quot;&#xA;" />
-    </Target>
-
 </Project>
