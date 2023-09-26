@@ -64,6 +64,7 @@ public record ProfileBlock : IDisposable
 public class ProfilerReport
 {
     public ulong TotalCpuElapsed { get; set; }
+    public int BytesProcessed { get; set; }
     public ulong CpuFrequency { get; set; }
     public ProfileAnchor[] Anchors { get; set; }
     public int PairCount { get; set; }
@@ -104,14 +105,15 @@ public static class SMXProfiler
         GlobalProfiler.StartTSC = TimerService.ReadCPUTimer();
     }
 
-    public static ProfilerReport EndAndPrintProfile()
+    public static ProfilerReport EndAndGetReport(int bytesCount)
     {
         GlobalProfiler.EndTSC = TimerService.ReadCPUTimer();
 
         var result = new ProfilerReport
         {
             CpuFrequency = TimerService.EstimateCPUTimerFreq(),
-            TotalCpuElapsed = GlobalProfiler.EndTSC - GlobalProfiler.StartTSC
+            TotalCpuElapsed = GlobalProfiler.EndTSC - GlobalProfiler.StartTSC,
+            BytesProcessed = bytesCount
         };
 
         if (result.CpuFrequency > 0)

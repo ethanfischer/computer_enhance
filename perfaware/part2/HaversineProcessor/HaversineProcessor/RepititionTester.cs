@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices.JavaScript;
 using Newtonsoft.Json;
 using SMXGo.Scripts.Other;
 namespace HaversineProcessor;
@@ -6,32 +7,31 @@ public static class RepititionTester
 {
     public static void Test(Func<ProfilerReport> test)
     {
-        const int reportsCount = 10;
-        var reports = new ProfilerReport[reportsCount];
-        var avgTotalCpuElapsed = 0.0;
-        var maxTotalCpuElapsed = 0.0;
+        var minTotalCpuElapsed = ulong.MaxValue;
+        var lastNewMinTime = DateTime.UtcNow;
+        var maxWaitingTime = TimeSpan.FromMinutes(30);
+        var timeSinceLastNewMin = new TimeSpan();
+        var previousTime = DateTime.UtcNow;
 
-        for (var i = 0; i < reportsCount; i++)
+        while (timeSinceLastNewMin < maxWaitingTime)
         {
-            reports[i] = test.Invoke();
-            Console.WriteLine($"Report {i + 1}");
-            Console.WriteLine($"-----------------------------------");
-            LogReport(reports[i]);
-            Console.WriteLine($"");
-            var reportsSoFar = reports[..(i+1)];
-            avgTotalCpuElapsed  = reportsSoFar
-                .Select(x => x.TotalCpuElapsed)
-                .Average(Convert.ToDouble);
-            maxTotalCpuElapsed = reportsSoFar
-                .Select(x => x.TotalCpuElapsed)
-                .Max(Convert.ToDouble);
-            Console.WriteLine($"Average: {avgTotalCpuElapsed}");
-            Console.WriteLine($"Max: {maxTotalCpuElapsed}");
-            Console.WriteLine($"-----------------------------------");
-            Console.WriteLine($"");
-            Console.WriteLine($"");
-            Console.WriteLine($"");
+            var report = test.Invoke();
+            if(report.TotalCpuElapsed < minTotalCpuElapsed)
+            {
+                minTotalCpuElapsed = report.TotalCpuElapsed;
+                var gb = 1024f * 1024f * 1024f;
+                var seconds = (double)report.TotalCpuElapsed / report.CpuFrequency;
+                var bestBandwidth = report.BytesProcessed / (gb * seconds);
+                Console.WriteLine($"Min {minTotalCpuElapsed} ({seconds*1000:F2}ms) {bestBandwidth:F2}gb/s");
+                lastNewMinTime = DateTime.UtcNow;
+                timeSinceLastNewMin = TimeSpan.Zero;
+            }
+
+            timeSinceLastNewMin += DateTime.UtcNow - previousTime;
+            previousTime = DateTime.UtcNow;
         }
+        
+        Console.WriteLine($"Min {minTotalCpuElapsed}");
     }
 
     static void LogReport(ProfilerReport report)
