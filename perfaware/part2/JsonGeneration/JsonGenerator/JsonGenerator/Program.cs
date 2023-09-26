@@ -38,11 +38,11 @@ internal class Program
         }
 
         var json = JsonSerializer.Serialize(pairs);
-        File.WriteAllText("/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/data.json", json);
+        File.WriteAllText("/home/ethan/repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/data.json", json);
 
         var expectedAvg = sum / count;
         Console.WriteLine($"Expected avg: {expectedAvg}");
-        File.WriteAllText("/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/answer.txt", expectedAvg.ToString());
+        File.WriteAllText("/home/ethan/repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/answer.txt", expectedAvg.ToString());
         Main(default);
     }
 
