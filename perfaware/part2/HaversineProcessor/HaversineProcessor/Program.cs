@@ -15,13 +15,15 @@ internal class Program
 
     static void RunHaversine()
     {
-        byte[] jsonBytes = { };
+        byte[] jsonBytes =
+        {
+        };
         using (TimeBlock("Read Json from Disk"))
         {
             RepititionTester.Test(() =>
             {
                 BeginProfile();
-                jsonBytes = File.ReadAllBytes("/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/data.json");
+                jsonBytes = File.ReadAllBytes("/home/ethan/repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/data.json");
                 return EndAndGetReport(jsonBytes.Length);
             });
 
@@ -55,3 +57,4 @@ internal class Program
 
         Recursive(depth + 1);
     }
+}
