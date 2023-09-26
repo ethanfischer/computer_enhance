@@ -1,4 +1,5 @@
 using System.Reflection;
+using static SMXGo.Scripts.Other.SMXProfiler;
 
 namespace JsonGenerator;
 
@@ -8,10 +9,16 @@ public static class JsonParser
 
     public static List<Pair> Deserialize(byte[] jsonBytes)
     {
+        // Console.WriteLine($"jsonBytes.Length: {jsonBytes.Length}");
+        using var _ = TimeBlock("Deserialize");
         var partials = PopulatePartials(jsonBytes);
-        foreach (var p in partials)
+
+        using (TimeBlock("PopulateMembers"))
         {
-            PopulateMembers(p);
+            foreach (var p in partials)
+            {
+                PopulateMembers(p);
+            }
         }
 
         var result = partials.Select(x => x.Value).ToList();
