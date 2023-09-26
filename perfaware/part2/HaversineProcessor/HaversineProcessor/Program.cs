@@ -7,9 +7,9 @@ internal class Program
 {
     public static void Main(string[] args)
     {
-        var jsonBytes = File.ReadAllBytes("/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/data.json");
+        var jsonBytes = File.ReadAllBytes("/home/ethan/repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/data.json");
         var pairs = JsonParser.Deserialize(jsonBytes);
-        var answer = File.ReadAllText("/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/answer.txt");
+        var answer = File.ReadAllText("/home/ethan/repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/answer.txt");
         var count = pairs.Count;
         var sum = 0.00d;
         foreach(var pair in pairs)
