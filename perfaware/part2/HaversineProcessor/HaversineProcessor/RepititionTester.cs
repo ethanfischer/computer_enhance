@@ -24,12 +24,13 @@ public static class RepititionTester
             {
                 minTotalCpuElapsed = report.TotalCpuElapsed;
                 Console.WriteLine("--------------------------------------------------");
-                Console.WriteLine($"Min {minTotalCpuElapsed} ({seconds * 1000:F2}ms) {bandwidth:F2}gb/s");
+                Console.WriteLine($"New Min: {minTotalCpuElapsed} ({seconds * 1000:F2}ms) {bandwidth:F2}gb/s");
+                Console.WriteLine("--------------------------------------------------");
                 lastNewMinTime = DateTime.UtcNow;
                 timeSinceLastNewMin = TimeSpan.Zero;
             }
 
-            Console.WriteLine($"totalCpuElapsed: {report.TotalCpuElapsed} ({seconds * 1000:F2}ms {bandwidth:F2}gb/s)");
+            Console.WriteLine($"Elapsed: {report.TotalCpuElapsed} ({seconds * 1000:F2}ms {bandwidth:F2}gb/s)");
             timeSinceLastNewMin += DateTime.UtcNow - previousTime;
             previousTime = DateTime.UtcNow;
         }
