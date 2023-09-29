@@ -15,12 +15,15 @@ internal class Program
 
     static void RunHaversine()
     {
-        byte[] jsonBytes = { };
+        const int megabyte = 1024 * 1024;
+        var size = (int)(36.6 * megabyte);
+        byte[] jsonBytes = Array.Empty<byte>();
         using (TimeBlock("Read Json from Disk"))
         {
             RepititionTester.Test(() =>
             {
                 BeginProfile();
+                jsonBytes = new byte[size];
                 jsonBytes = File.ReadAllBytes("/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/data.json");
                 return EndAndGetReport(jsonBytes.Length);
             });
@@ -40,19 +43,5 @@ internal class Program
                 sum += Haversine.ReferenceHaversine(pair.X0, pair.Y0, pair.X1, pair.Y1);
             }
         }
-    }
-
-    private static void Recursive(int depth = 0)
-    {
-        using var _ = TimeBlock("Recursive");
-
-        if (depth > 10)
-        {
-            return;
-        }
-
-        Thread.Sleep(1000);
-
-        Recursive(depth + 1);
     }
 }
