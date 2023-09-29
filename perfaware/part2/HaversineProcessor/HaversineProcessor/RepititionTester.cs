@@ -16,21 +16,24 @@ public static class RepititionTester
         while (timeSinceLastNewMin < maxWaitingTime)
         {
             var report = test.Invoke();
-            if(report.TotalCpuElapsed < minTotalCpuElapsed)
+            var seconds = (double)report.TotalCpuElapsed / report.CpuFrequency;
+            const float gb = 1024f * 1024f * 1024f;
+            var bandwidth = report.BytesProcessed / (gb * seconds);
+            
+            if (report.TotalCpuElapsed < minTotalCpuElapsed)
             {
                 minTotalCpuElapsed = report.TotalCpuElapsed;
-                var gb = 1024f * 1024f * 1024f;
-                var seconds = (double)report.TotalCpuElapsed / report.CpuFrequency;
-                var bestBandwidth = report.BytesProcessed / (gb * seconds);
-                Console.WriteLine($"Min {minTotalCpuElapsed} ({seconds*1000:F2}ms) {bestBandwidth:F2}gb/s");
+                Console.WriteLine("--------------------------------------------------");
+                Console.WriteLine($"Min {minTotalCpuElapsed} ({seconds * 1000:F2}ms) {bandwidth:F2}gb/s");
                 lastNewMinTime = DateTime.UtcNow;
                 timeSinceLastNewMin = TimeSpan.Zero;
             }
 
+            Console.WriteLine($"totalCpuElapsed: {report.TotalCpuElapsed} ({seconds * 1000:F2}ms {bandwidth:F2}gb/s)");
             timeSinceLastNewMin += DateTime.UtcNow - previousTime;
             previousTime = DateTime.UtcNow;
         }
-        
+
         Console.WriteLine($"Min {minTotalCpuElapsed}");
     }
 
