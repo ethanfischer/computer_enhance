@@ -1,6 +1,6 @@
-using System.Runtime.InteropServices.JavaScript;
 using Newtonsoft.Json;
 using SMXGo.Scripts.Other;
+using Spectre.Console;
 namespace HaversineProcessor;
 
 public static class RepititionTester
@@ -8,30 +8,85 @@ public static class RepititionTester
     public static void Test(Func<bool, ProfilerReport> test, bool shouldAllocateMemory)
     {
         var minTotalCpuElapsed = ulong.MaxValue;
-        var lastNewMinTime = DateTime.UtcNow;
+        var maxTotalCpuElapsed = ulong.MinValue;
+        ulong totalTotalCpuElapsed = 0;
+
+        double minBandwidth = 0f;
+        double maxBandwidth = 0f;
+        double totalBandwidths = 0;
+
+        double minSeconds = 0f;
+        double maxSeconds = 0f;
+        double totalSeconds = 0f;
+
+        var iterations = 0;
+
         var maxWaitingTime = TimeSpan.FromSeconds(10);
         var timeSinceLastNewMin = new TimeSpan();
         var previousTime = DateTime.UtcNow;
+        var originalTop = Console.CursorTop;
 
-        while (timeSinceLastNewMin < maxWaitingTime)
-        {
-            var report = test.Invoke(shouldAllocateMemory);
-            var seconds = (double)report.TotalCpuElapsed / report.CpuFrequency;
-            const float gb = 1024f * 1024f * 1024f;
-            var bandwidth = report.BytesProcessed / (gb * seconds);
-            
-            if (report.TotalCpuElapsed < minTotalCpuElapsed)
+        var table = new Table();
+
+        // Assume some initial values
+        string min;
+        string max;
+        string avg;
+
+        AnsiConsole.Live(table)
+            .AutoClear(false) // Prevents the table from being cleared after the live display ends
+            .Overflow(VerticalOverflow.Ellipsis)
+            .Cropping(VerticalOverflowCropping.Top)
+            .Start(ctx =>
             {
-                minTotalCpuElapsed = report.TotalCpuElapsed;
-                WriteLineAndClear($"Min: {minTotalCpuElapsed} ({seconds * 1000:F2}ms) {bandwidth:F2}gb/s");
-                lastNewMinTime = DateTime.UtcNow;
-                timeSinceLastNewMin = TimeSpan.Zero;
-            }
+                    table.AddColumn("Stat");
+                    table.AddColumn("Value");
+                    
+                while (timeSinceLastNewMin < maxWaitingTime)
+                {
+                    var report = test.Invoke(shouldAllocateMemory);
+                    var seconds = (double)report.TotalCpuElapsed / report.CpuFrequency;
+                    const float gb = 1024f * 1024f * 1024f;
+                    var bandwidth = report.BytesProcessed / (gb * seconds);
 
-            timeSinceLastNewMin += DateTime.UtcNow - previousTime;
-            previousTime = DateTime.UtcNow;
-        }
-        Console.WriteLine();
+                    if (report.TotalCpuElapsed < minTotalCpuElapsed)
+                    {
+                        minTotalCpuElapsed = report.TotalCpuElapsed;
+                        timeSinceLastNewMin = TimeSpan.Zero;
+                        minBandwidth = bandwidth;
+                        minSeconds = seconds;
+                    }
+                    if (report.TotalCpuElapsed > maxTotalCpuElapsed)
+                    {
+                        maxTotalCpuElapsed = report.TotalCpuElapsed;
+                        maxBandwidth = bandwidth;
+                        maxSeconds = seconds;
+                    }
+
+                    totalTotalCpuElapsed += report.TotalCpuElapsed;
+                    totalBandwidths += bandwidth;
+                    totalSeconds += seconds;
+                    iterations++;
+
+                    min = $"{minTotalCpuElapsed} ({minSeconds * 1000:F2}ms) {minBandwidth:F2}gb/s";
+                    max = $"{maxTotalCpuElapsed} ({maxSeconds * 1000:F2}ms) {maxBandwidth:F2}gb/s";
+                    avg = $"{totalTotalCpuElapsed / (ulong)iterations} ({totalSeconds / iterations * 1000:F2}ms) {totalBandwidths / iterations:F2}gb/s";
+
+                    timeSinceLastNewMin += DateTime.UtcNow - previousTime;
+                    previousTime = DateTime.UtcNow;
+
+
+                    table.Rows.Clear();
+                    table.AddRow("Min", min);
+                    table.AddRow("Max", max);
+                    table.AddRow("Avg", avg);
+
+                    ctx.Refresh();
+
+                    // Some delay to see the update, replace with your loop logic
+                    Thread.Sleep(1000);
+                }
+            });
     }
 
     static void LogReport(ProfilerReport report)
@@ -48,14 +103,5 @@ public static class RepititionTester
         var profileAnchors = report.Anchors.Where(x => x.HitCount > 0);
         var serializedAnchors = JsonConvert.SerializeObject(profileAnchors);
         return serializedAnchors;
-    }
-    
-    static void WriteLineAndClear(string line)
-    {
-        int currentLine = Console.CursorTop;
-        Console.SetCursorPosition(0, currentLine);
-        Console.Write(new string(' ', Console.WindowWidth));  // Clear the line
-        Console.SetCursorPosition(0, currentLine);
-        Console.Write(line);
     }
 }

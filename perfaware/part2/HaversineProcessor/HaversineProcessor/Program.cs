@@ -15,18 +15,22 @@ internal class Program
 
     static void RunHaversine()
     {
-        const int megabyte = 1024 * 1024;
-        var size = (int)(36.6 * megabyte);
-        byte[] jsonBytes = Array.Empty<byte>();
+        const int size = 588_124_160;
+        var jsonBytes = new byte[size];
         var shouldAllocateMemory = false;
         while (true)
         {
             Console.WriteLine($"{(shouldAllocateMemory ? "Allocating" : "Not Allocating")}");
-            RepititionTester.Test((shouldAllocate) =>
+            RepititionTester.Test(shouldAllocate =>
             {
-                AllocateJsonBytes(size, shouldAllocate, jsonBytes);
+                jsonBytes = AllocateJsonBytes(size, shouldAllocate, jsonBytes);
                 BeginProfile();
-                jsonBytes = File.ReadAllBytes("C:/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/data.json");
+                //jsonBytes = File.ReadAllBytes("C:/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/data.json");
+                using (var fs = new FileStream("C:/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/data.json", FileMode.Open, FileAccess.Read))
+                {
+                    fs.Read(jsonBytes, 0, jsonBytes.Length);
+                }
+
                 return EndAndGetReport(jsonBytes.Length);
             }, shouldAllocateMemory);
             shouldAllocateMemory = !shouldAllocateMemory;
@@ -47,11 +51,8 @@ internal class Program
         }
     }
     
-    static void AllocateJsonBytes(int size, bool shouldMalloc, byte[] existingBytes)
+    static byte[] AllocateJsonBytes(int size, bool shouldMalloc, byte[] existingBytes)
     {
-        if (shouldMalloc)
-        { 
-            existingBytes = new byte[size];
-        }
+        return shouldMalloc ? new byte[size] : existingBytes;
     }
 }
