@@ -18,16 +18,18 @@ internal class Program
         const int megabyte = 1024 * 1024;
         var size = (int)(36.6 * megabyte);
         byte[] jsonBytes = Array.Empty<byte>();
-        using (TimeBlock("Read Json from Disk"))
+        var shouldAllocateMemory = false;
+        while (true)
         {
-            RepititionTester.Test(() =>
+            Console.WriteLine($"{(shouldAllocateMemory ? "Allocating" : "Not Allocating")}");
+            RepititionTester.Test((shouldAllocate) =>
             {
+                AllocateJsonBytes(size, shouldAllocate, jsonBytes);
                 BeginProfile();
-                jsonBytes = new byte[size];
-                jsonBytes = File.ReadAllBytes("/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/data.json");
+                jsonBytes = File.ReadAllBytes("C:/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/data.json");
                 return EndAndGetReport(jsonBytes.Length);
-            });
-
+            }, shouldAllocateMemory);
+            shouldAllocateMemory = !shouldAllocateMemory;
         }
 
         var pairs = JsonParser.Deserialize(jsonBytes);
@@ -42,6 +44,14 @@ internal class Program
             {
                 sum += Haversine.ReferenceHaversine(pair.X0, pair.Y0, pair.X1, pair.Y1);
             }
+        }
+    }
+    
+    static void AllocateJsonBytes(int size, bool shouldMalloc, byte[] existingBytes)
+    {
+        if (shouldMalloc)
+        { 
+            existingBytes = new byte[size];
         }
     }
 }

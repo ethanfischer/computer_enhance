@@ -5,17 +5,17 @@ namespace HaversineProcessor;
 
 public static class RepititionTester
 {
-    public static void Test(Func<ProfilerReport> test)
+    public static void Test(Func<bool, ProfilerReport> test, bool shouldAllocateMemory)
     {
         var minTotalCpuElapsed = ulong.MaxValue;
         var lastNewMinTime = DateTime.UtcNow;
-        var maxWaitingTime = TimeSpan.FromMinutes(30);
+        var maxWaitingTime = TimeSpan.FromSeconds(10);
         var timeSinceLastNewMin = new TimeSpan();
         var previousTime = DateTime.UtcNow;
 
         while (timeSinceLastNewMin < maxWaitingTime)
         {
-            var report = test.Invoke();
+            var report = test.Invoke(shouldAllocateMemory);
             var seconds = (double)report.TotalCpuElapsed / report.CpuFrequency;
             const float gb = 1024f * 1024f * 1024f;
             var bandwidth = report.BytesProcessed / (gb * seconds);
@@ -23,19 +23,15 @@ public static class RepititionTester
             if (report.TotalCpuElapsed < minTotalCpuElapsed)
             {
                 minTotalCpuElapsed = report.TotalCpuElapsed;
-                Console.WriteLine("--------------------------------------------------");
-                Console.WriteLine($"New Min: {minTotalCpuElapsed} ({seconds * 1000:F2}ms) {bandwidth:F2}gb/s");
-                Console.WriteLine("--------------------------------------------------");
+                WriteLineAndClear($"Min: {minTotalCpuElapsed} ({seconds * 1000:F2}ms) {bandwidth:F2}gb/s");
                 lastNewMinTime = DateTime.UtcNow;
                 timeSinceLastNewMin = TimeSpan.Zero;
             }
 
-            Console.WriteLine($"Elapsed: {report.TotalCpuElapsed} ({seconds * 1000:F2}ms {bandwidth:F2}gb/s)");
             timeSinceLastNewMin += DateTime.UtcNow - previousTime;
             previousTime = DateTime.UtcNow;
         }
-
-        Console.WriteLine($"Min {minTotalCpuElapsed}");
+        Console.WriteLine();
     }
 
     static void LogReport(ProfilerReport report)
@@ -52,5 +48,14 @@ public static class RepititionTester
         var profileAnchors = report.Anchors.Where(x => x.HitCount > 0);
         var serializedAnchors = JsonConvert.SerializeObject(profileAnchors);
         return serializedAnchors;
+    }
+    
+    static void WriteLineAndClear(string line)
+    {
+        int currentLine = Console.CursorTop;
+        Console.SetCursorPosition(0, currentLine);
+        Console.Write(new string(' ', Console.WindowWidth));  // Clear the line
+        Console.SetCursorPosition(0, currentLine);
+        Console.Write(line);
     }
 }
