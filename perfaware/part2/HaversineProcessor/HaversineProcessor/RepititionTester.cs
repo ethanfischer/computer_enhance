@@ -5,6 +5,8 @@ namespace HaversineProcessor;
 
 public static class RepititionTester
 {
+    static long _minorFaults;
+    static long _majorFaults;
     public static void Test(Func<bool, ProfilerReport> test, bool shouldAllocateMemory)
     {
         var minTotalCpuElapsed = ulong.MaxValue;
@@ -89,8 +91,10 @@ public static class RepititionTester
             });
 
         var rUsage = MacPerformanceMetrics.GetRUsage();
-        Console.WriteLine($"Major Page Faults: {rUsage.ru_majflt}");
-        Console.WriteLine($"Minor Page Faults: {rUsage.ru_minflt}");
+        _majorFaults = rUsage.ru_majflt - _majorFaults;
+        _minorFaults = rUsage.ru_minflt - _minorFaults;
+        Console.WriteLine($"Major Page Faults: {_majorFaults}");
+        Console.WriteLine($"Minor Page Faults: {_minorFaults}");
     }
 
     static void LogReport(ProfilerReport report)
