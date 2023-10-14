@@ -51,7 +51,7 @@ internal class Program
             }
         }
     }
-    
+
     static byte[] AllocateJsonBytes(int size, bool shouldMalloc, byte[] existingBytes)
     {
         return shouldMalloc ? new byte[size] : existingBytes;

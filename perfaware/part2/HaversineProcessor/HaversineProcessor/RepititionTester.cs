@@ -39,9 +39,9 @@ public static class RepititionTester
             .Cropping(VerticalOverflowCropping.Top)
             .Start(ctx =>
             {
-                    table.AddColumn("Stat");
-                    table.AddColumn("Value");
-                    
+                table.AddColumn("Stat");
+                table.AddColumn("Value");
+
                 while (timeSinceLastNewMin < maxWaitingTime)
                 {
                     var report = test.Invoke(shouldAllocateMemory);
@@ -87,6 +87,10 @@ public static class RepititionTester
                     Thread.Sleep(1000);
                 }
             });
+
+        var rUsage = MacPerformanceMetrics.GetRUsage();
+        Console.WriteLine($"Major Page Faults: {rUsage.ru_majflt}");
+        Console.WriteLine($"Minor Page Faults: {rUsage.ru_minflt}");
     }
 
     static void LogReport(ProfilerReport report)
@@ -104,3 +108,4 @@ public static class RepititionTester
         var serializedAnchors = JsonConvert.SerializeObject(profileAnchors);
         return serializedAnchors;
     }
+}

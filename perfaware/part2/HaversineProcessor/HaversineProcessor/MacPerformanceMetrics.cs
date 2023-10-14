@@ -6,30 +6,37 @@ public class MacPerformanceMetrics
     [StructLayout(LayoutKind.Sequential)]
     public struct TimeValue
     {
-        public int Sec;
-        public int Usec;
+        public long Sec;
+        public long Usec;
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct RUsage
+    public struct rusage
     {
-        public TimeValue Utime;
-        public TimeValue Stime;
-        public long Maxrss;
-        public long Ixrss;
-        public long Idrss;
-        public long Isrss;
-        public long Minflt; // Page reclaims
-        public long Majflt; // Page faults
-        // ... (other fields)
+        public TimeValue ru_utime; /* user time used */
+        public TimeValue ru_stime; /* system time used */
+        public long ru_maxrss; /* max resident set size */
+        public long ru_ixrss; /* integral shared text memory size */
+        public long ru_idrss; /* integral unshared data size */
+        public long ru_isrss; /* integral unshared stack size */
+        public long ru_minflt; /* page reclaims */
+        public long ru_majflt; /* page faults */
+        public long ru_nswap; /* swaps */
+        public long ru_inblock; /* block input operations */
+        public long ru_oublock; /* block output operations */
+        public long ru_msgsnd; /* messages sent */
+        public long ru_msgrcv; /* messages received */
+        public long ru_nsignals; /* signals received */
+        public long ru_nvcsw; /* voluntary context switches */
+        public long ru_nivcsw; /* involuntary context switches */
     }
 
     [DllImport("libc", SetLastError = true)]
-    public static extern int getrusage(int who, ref RUsage usage);
+    public static extern int getrusage(int who, ref rusage usage);
 
-    public static RUsage GetRUsage()
+    public static rusage GetRUsage()
     {
-        var usage = new RUsage();
+        var usage = new rusage();
         getrusage(RUSAGE_SELF, ref usage);
         return usage;
     }
