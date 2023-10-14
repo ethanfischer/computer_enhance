@@ -104,4 +104,3 @@ public static class RepititionTester
         var serializedAnchors = JsonConvert.SerializeObject(profileAnchors);
         return serializedAnchors;
     }
-}
