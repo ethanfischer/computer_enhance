@@ -11,7 +11,7 @@ public class MacPerformanceMetrics
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct rusage
+    public struct RUsage
     {
         public TimeValue ru_utime; /* user time used */
         public TimeValue ru_stime; /* system time used */
@@ -32,11 +32,11 @@ public class MacPerformanceMetrics
     }
 
     [DllImport("libc", SetLastError = true)]
-    public static extern int getrusage(int who, ref rusage usage);
+    public static extern int getrusage(int who, ref RUsage usage);
 
-    public static rusage GetRUsage()
+    public static RUsage GetRUsage()
     {
-        var usage = new rusage();
+        var usage = new RUsage();
         getrusage(RUSAGE_SELF, ref usage);
         return usage;
     }

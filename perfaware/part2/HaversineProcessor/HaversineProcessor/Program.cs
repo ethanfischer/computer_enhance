@@ -15,7 +15,7 @@ internal class Program
 
     static void RunHaversine()
     {
-        const int size = 588_124_160;
+        const int size = 588_120_879;
         var jsonBytes = new byte[size];
         var shouldAllocateMemory = false;
         while (true)
@@ -26,7 +26,6 @@ internal class Program
                 jsonBytes = AllocateJsonBytes(size, shouldAllocate, jsonBytes);
                 BeginProfile();
                 //jsonBytes = File.ReadAllBytes("C:/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/data.json");
-                var currentD = Directory.GetCurrentDirectory();
                 using (var fs = new FileStream("../../../../../JsonGeneration/JsonGenerator/JsonGenerator/data.json", FileMode.Open, FileAccess.Read))
                 {
                     fs.Read(jsonBytes, 0, jsonBytes.Length);

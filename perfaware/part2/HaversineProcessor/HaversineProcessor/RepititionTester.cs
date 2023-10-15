@@ -5,28 +5,12 @@ namespace HaversineProcessor;
 
 public static class RepititionTester
 {
-    static long _minorFaults;
-    static long _majorFaults;
     public static void Test(Func<bool, ProfilerReport> test, bool shouldAllocateMemory)
     {
-        var minTotalCpuElapsed = ulong.MaxValue;
-        var maxTotalCpuElapsed = ulong.MinValue;
-        ulong totalTotalCpuElapsed = 0;
-
-        double minBandwidth = 0f;
-        double maxBandwidth = 0f;
-        double totalBandwidths = 0;
-
-        double minSeconds = 0f;
-        double maxSeconds = 0f;
-        double totalSeconds = 0f;
-
-        var iterations = 0;
-
-        var maxWaitingTime = TimeSpan.FromSeconds(10);
+        long _memPageFaults;
+        var maxWaitingTime = TimeSpan.FromSeconds(60);
         var timeSinceLastNewMin = new TimeSpan();
         var previousTime = DateTime.UtcNow;
-        var originalTop = Console.CursorTop;
 
         var table = new Table();
 
@@ -44,35 +28,44 @@ public static class RepititionTester
                 table.AddColumn("Stat");
                 table.AddColumn("Value");
 
+                var repetitionReport = new RepetitionReport();
+
                 while (timeSinceLastNewMin < maxWaitingTime)
                 {
-                    var report = test.Invoke(shouldAllocateMemory);
-                    var seconds = (double)report.TotalCpuElapsed / report.CpuFrequency;
+                    var faultsBeforeTest = GetMemFaults();
+                    var testReport = test.Invoke(shouldAllocateMemory);
+                    _memPageFaults = GetMemFaults() - faultsBeforeTest;
+                    var seconds = (double)testReport.TotalCpuElapsed / testReport.CpuFrequency;
                     const float gb = 1024f * 1024f * 1024f;
-                    var bandwidth = report.BytesProcessed / (gb * seconds);
+                    var bandwidth = testReport.BytesProcessed / (gb * seconds);
 
-                    if (report.TotalCpuElapsed < minTotalCpuElapsed)
+
+                    if (testReport.TotalCpuElapsed < repetitionReport.MinTotalCpuElapsed)
                     {
-                        minTotalCpuElapsed = report.TotalCpuElapsed;
+                        repetitionReport.MinTotalCpuElapsed = testReport.TotalCpuElapsed;
                         timeSinceLastNewMin = TimeSpan.Zero;
-                        minBandwidth = bandwidth;
-                        minSeconds = seconds;
+                        repetitionReport.MinBandwidth = bandwidth;
+                        repetitionReport.MinSeconds = seconds;
+                        repetitionReport.MinFaults = _memPageFaults;
                     }
-                    if (report.TotalCpuElapsed > maxTotalCpuElapsed)
+                    if (testReport.TotalCpuElapsed > repetitionReport.MaxTotalCpuElapsed)
                     {
-                        maxTotalCpuElapsed = report.TotalCpuElapsed;
-                        maxBandwidth = bandwidth;
-                        maxSeconds = seconds;
+                        repetitionReport.MaxTotalCpuElapsed = testReport.TotalCpuElapsed;
+                        repetitionReport.MaxBandwidth = bandwidth;
+                        repetitionReport.MaxSeconds = seconds;
+                        repetitionReport.MaxFaults = _memPageFaults;
                     }
 
-                    totalTotalCpuElapsed += report.TotalCpuElapsed;
-                    totalBandwidths += bandwidth;
-                    totalSeconds += seconds;
-                    iterations++;
+                    repetitionReport.TotalTotalCpuElapsed += testReport.TotalCpuElapsed;
+                    repetitionReport.TotalBandwidths += bandwidth;
+                    repetitionReport.TotalSeconds += seconds;
+                    repetitionReport.TotalFaults += _memPageFaults;
+                    repetitionReport.Iterations++;
 
-                    min = $"{minTotalCpuElapsed} ({minSeconds * 1000:F2}ms) {minBandwidth:F2}gb/s";
-                    max = $"{maxTotalCpuElapsed} ({maxSeconds * 1000:F2}ms) {maxBandwidth:F2}gb/s";
-                    avg = $"{totalTotalCpuElapsed / (ulong)iterations} ({totalSeconds / iterations * 1000:F2}ms) {totalBandwidths / iterations:F2}gb/s";
+                    min = $"{repetitionReport.MinTotalCpuElapsed} ({repetitionReport.MinSeconds * 1000:F2}ms) {repetitionReport.MinBandwidth:F2}gb/s PF: {repetitionReport.MinFaults} ({testReport.BytesProcessed / repetitionReport.MinFaults / 1024:F2}k/fault)";
+                    max = $"{repetitionReport.MaxTotalCpuElapsed} ({repetitionReport.MaxSeconds * 1000:F2}ms) {repetitionReport.MaxBandwidth:F2}gb/s PF: {repetitionReport.MaxFaults} ({testReport.BytesProcessed / repetitionReport.MaxFaults / 1024:F2}k/fault)";
+                    var avgFaults = repetitionReport.TotalFaults / repetitionReport.Iterations;
+                    avg = $"{repetitionReport.TotalTotalCpuElapsed / (ulong)repetitionReport.Iterations} ({repetitionReport.TotalSeconds / repetitionReport.Iterations * 1000:F2}ms) {repetitionReport.TotalBandwidths / repetitionReport.Iterations:F2}gb/s PF: {avgFaults:F2} ({testReport.BytesProcessed / avgFaults / 1024:F2}k/fault)";
 
                     timeSinceLastNewMin += DateTime.UtcNow - previousTime;
                     previousTime = DateTime.UtcNow;
@@ -89,12 +82,31 @@ public static class RepititionTester
                     Thread.Sleep(1000);
                 }
             });
+    }
 
+    static long GetMemFaults()
+    {
         var rUsage = MacPerformanceMetrics.GetRUsage();
-        _majorFaults = rUsage.ru_majflt - _majorFaults;
-        _minorFaults = rUsage.ru_minflt - _minorFaults;
-        Console.WriteLine($"Major Page Faults: {_majorFaults}");
-        Console.WriteLine($"Minor Page Faults: {_minorFaults}");
+        return rUsage.ru_minflt + rUsage.ru_majflt;
+    }
+
+    struct RepetitionReport
+    {
+        public RepetitionReport() { }
+
+        public ulong MinTotalCpuElapsed = ulong.MaxValue;
+        public ulong MaxTotalCpuElapsed = ulong.MinValue;
+        public ulong TotalTotalCpuElapsed = 0;
+        public double MinBandwidth = 0f;
+        public double MaxBandwidth = 0f;
+        public double TotalBandwidths = 0;
+        public double MinSeconds = 0f;
+        public double MaxSeconds = 0f;
+        public double TotalSeconds = 0f;
+        public double MaxFaults = 0f;
+        public double MinFaults = 0f;
+        public double TotalFaults = 0f;
+        public int Iterations = 0;
     }
 
     static void LogReport(ProfilerReport report)
