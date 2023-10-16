@@ -7,7 +7,7 @@ public static class RepititionTester
 {
     public static void Test(Func<bool, ProfilerReport> test, bool shouldAllocateMemory)
     {
-        long _memPageFaults;
+        ulong _memPageFaults;
         var maxWaitingTime = TimeSpan.FromSeconds(60);
         var timeSinceLastNewMin = new TimeSpan();
         var previousTime = DateTime.UtcNow;
@@ -32,9 +32,9 @@ public static class RepititionTester
 
                 while (timeSinceLastNewMin < maxWaitingTime)
                 {
-                    var faultsBeforeTest = GetMemFaults();
+                    var faultsBeforeTest = UnixOperations.GetMemFaults();
                     var testReport = test.Invoke(shouldAllocateMemory);
-                    _memPageFaults = GetMemFaults() - faultsBeforeTest;
+                    _memPageFaults = UnixOperations.GetMemFaults() - faultsBeforeTest;
                     var seconds = (double)testReport.TotalCpuElapsed / testReport.CpuFrequency;
                     const float gb = 1024f * 1024f * 1024f;
                     var bandwidth = testReport.BytesProcessed / (gb * seconds);
@@ -82,12 +82,6 @@ public static class RepititionTester
                     Thread.Sleep(1000);
                 }
             });
-    }
-
-    static long GetMemFaults()
-    {
-        var rUsage = MacPerformanceMetrics.GetRUsage();
-        return rUsage.ru_minflt + rUsage.ru_majflt;
     }
 
     struct RepetitionReport

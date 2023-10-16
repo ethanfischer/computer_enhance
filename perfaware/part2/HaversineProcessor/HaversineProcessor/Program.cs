@@ -8,10 +8,10 @@ using static SMXGo.Scripts.Other.SMXProfiler;
 
 internal class Program
 {
-    public static void Main(string[] args)
-    {
-        RunHaversine();
-    }
+    // public static void Main(string[] args)
+    // {
+    //     RunHaversine();
+    // }
 
     static void RunHaversine()
     {
@@ -25,7 +25,6 @@ internal class Program
             {
                 jsonBytes = AllocateJsonBytes(size, shouldAllocate, jsonBytes);
                 BeginProfile();
-                //jsonBytes = File.ReadAllBytes("C:/Users/ethanfischer/Repos/computer_enhance/perfaware/part2/JsonGeneration/JsonGenerator/JsonGenerator/data.json");
                 using (var fs = new FileStream("../../../../../JsonGeneration/JsonGenerator/JsonGenerator/data.json", FileMode.Open, FileAccess.Read))
                 {
                     fs.Read(jsonBytes, 0, jsonBytes.Length);
